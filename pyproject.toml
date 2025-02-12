@@ -23,4 +23,5 @@ dependencies = [
     "langchain-neo4j>=0.3.0",
     "elevenlabs>=1.50.7",
     "langchain-google-genai>=2.0.9",
+    "fastapi[all]>=0.115.8",
 ]

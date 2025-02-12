@@ -76,7 +76,7 @@ prompt = ChatPromptTemplate.from_messages(
 trimmer = trim_messages(
     max_tokens=int(os.environ['CONTEXT_WINDOW_SIZE']),
     strategy="last",
-    token_counter=lambda x: len(x),
+    token_counter=ChatOpenAI(model="gpt-4o-mini"), #lambda x: len(x),
     include_system=True,
     start_on="human",
 )
@@ -135,12 +135,15 @@ def text_interaction(query, config, context, lang='English', pprint=False):
         print()
     return output["messages"][-1].content
 
-def audio_interaction(audio_path, config, context, lang='English', speak=False) -> Iterator[bytes]:
+def transcribe(audio_path):
     with open(audio_path, 'rb') as audio_file:
-        query = openai_client.audio.transcriptions.create(
+        return openai_client.audio.transcriptions.create(
             model="whisper-1",
             file=audio_file
         ).text
+
+def audio_interaction(audio_path, config, context, lang='English', speak=False) -> Iterator[bytes]:
+    query = transcribe(audio_path)
 
     rewritten_query = rewrite_query(query)
     if is_about_immunology(rewritten_query):
@@ -180,11 +183,7 @@ def text_stream(query, config, context, lang='English', pprint=False):
         yield chunk['model']['messages']['content']
 
 def audio_stream(audio_path, config, context, lang='English'):
-    with open(audio_path, 'rb') as audio_file:
-        query = openai_client.audio.transcriptions.create(
-            model="whisper-1",
-            file=audio_file
-        ).text
+    query = transcribe(audio_path)
 
     rewritten_query = rewrite_query(query)
     if is_about_immunology(rewritten_query):
@@ -221,4 +220,4 @@ if __name__ == '__main__':
         query_input = input('User: ')
         print()
         for chunk in text_stream(query_input, configuration, ctx, language):
-            print(chunk)
+            print(chunk, end=' ')

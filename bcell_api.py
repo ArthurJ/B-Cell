@@ -22,7 +22,7 @@ class Chat(BaseModel):
 
 @app.get("/")
 def read_root():
-    return {"Hello": "World"}
+    raise HTTPException(status_code=404)
 
 @app.get("/new-chat")
 async def new_chat(lang:str = 'English'):
