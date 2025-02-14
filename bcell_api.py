@@ -9,7 +9,8 @@ from pydantic import BaseModel
 
 from secrets import token_hex
 
-from dialogue import text_interaction, audio_interaction, audio_stream
+from langchain_core.chat_history import InMemoryChatMessageHistory
+from dialogue import text_interaction, audio_interaction
 
 app = FastAPI(title='API')
 LOG = logging.getLogger('uvicorn.error')
@@ -19,6 +20,7 @@ class Chat(BaseModel):
     thread_id: str
     context: deque
     language: str
+    memory: InMemoryChatMessageHistory
 
 @app.get("/")
 def read_root():
@@ -26,36 +28,39 @@ def read_root():
 
 @app.get("/new-chat")
 async def new_chat(lang:str = 'English'):
-    thread_id = token_hex()
-    chat = Chat(thread_id=thread_id,
+    chat_id = token_hex()
+    chat = Chat(thread_id=chat_id,
                 context=deque(maxlen=3),
-                language=lang)
-    chats[thread_id] = chat
-    LOG.info(thread_id)
-    return {"thread_id": thread_id}
+                language=lang,
+                memory=InMemoryChatMessageHistory())
+    chats[chat_id] = chat
+    LOG.info(chat_id)
+    return {"chat_id": chat_id}
 
-@app.post("/chat/text/{thread}")
-async def send_text(thread:str, message:str):
+@app.get("/chat/text/{chat_id}")
+async def send_text(chat_id:str, message:str):
     if not message:
         return
-    if thread not in chats:
+    if chat_id not in chats:
         raise HTTPException(status_code=404, detail="Chat not found.")
-    chat: Chat = chats[thread]
+    chat: Chat = chats[chat_id]
     output = text_interaction(message,
-                              {"configurable": {"thread_id": thread}},
+                              {"configurable": {"thread_id": chat_id}},
                               chat.context,
-                              chat.language)
+                              chat.language,
+                              chat.memory)
     return {'ai_message': output}
 
-@app.post("/chat/audio/{thread}")
-async def send_audio(thread:str,
-                     audio: Annotated[UploadFile, File(description="filetypes: flac, m4a, mp3, mp4, mpeg, oga, ogg, wav, webm")]=None):
+@app.get("/chat/audio/{chat_id}")
+async def send_audio(chat_id:str,
+                     audio: Annotated[UploadFile,
+                                      File(description="filetypes: flac, m4a, mp3, mp4, mpeg, oga, ogg, wav, webm")]=None):
     if not audio:
         return
 
-    if thread not in chats:
+    if chat_id not in chats:
         raise HTTPException(status_code=404, detail="Chat not found.")
-    chat: Chat = chats[thread]
+    chat: Chat = chats[chat_id]
 
     suffix = '.' + audio.filename.split('.')[-1]
     try:
@@ -64,9 +69,10 @@ async def send_audio(thread:str,
             f.write(contents)
             LOG.info(f.name)
             output = audio_interaction(f.name,
-                                       {"configurable": {"thread_id": thread}},
+                                       {"configurable": {"thread_id": chat_id}},
                                        chat.context,
-                                       chat.language)
+                                       chat.language,
+                                       chat.memory)
     except Exception as e:
         LOG.error(str(e), exc_info=True)
         raise HTTPException(status_code=500, detail='Something went wrong')
@@ -80,41 +86,3 @@ async def send_audio(thread:str,
         LOG.info(f.name)
         return FileResponse(audio_file.name)
 
-@app.post("/stream-chat/text/{thread}")
-async def stream_text(thread:str, message:str):
-    if not message:
-        return
-    if thread not in chats:
-        raise HTTPException(status_code=404, detail="Chat not found.")
-    chat: Chat = chats[thread]
-    return StreamingResponse(text_interaction(message,
-                             {"configurable": {"thread_id": thread}},
-                             chat.context,
-                             chat.language)
-    )
-
-@app.post("/stream-chat/audio/{thread}")
-async def stream_audio(thread:str,
-                     audio: Annotated[UploadFile, File(description="filetypes: flac, m4a, mp3, mp4, mpeg, oga, ogg, wav, webm")]=None):
-    if not audio:
-        return
-
-    if thread not in chats:
-        raise HTTPException(status_code=404, detail="Chat not found.")
-    chat: Chat = chats[thread]
-
-    suffix = '.' + audio.filename.split('.')[-1]
-    try:
-        contents = audio.file.read()
-        with NamedTemporaryFile(suffix=suffix) as f:
-            f.write(contents)
-            LOG.info(f.name)
-            return StreamingResponse(audio_stream(f.name,
-                                       {"configurable": {"thread_id": thread}},
-                                       chat.context,
-                                       chat.language),  media_type=f"audio/mp3")
-    except Exception as e:
-        LOG.error(str(e), exc_info=True)
-        raise HTTPException(status_code=500, detail='Something went wrong')
-    finally:
-        audio.file.close()

@@ -1,10 +1,11 @@
 import os
 from collections import deque
+from datetime import datetime
 
 from dotenv import load_dotenv
 load_dotenv()
 
-from typing import Sequence, List, Dict, Any, Iterator
+from typing import Sequence, List, Iterator, Optional
 from typing_extensions import Annotated, TypedDict
 
 from langchain_core.messages import HumanMessage, trim_messages, AIMessage
@@ -16,7 +17,7 @@ from langgraph.graph.message import add_messages
 from langchain_core.documents import Document
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 
-from datetime import datetime
+from langchain_core.chat_history import InMemoryChatMessageHistory
 
 from langchain_pinecone import PineconeVectorStore
 from langchain_openai import OpenAIEmbeddings
@@ -24,40 +25,18 @@ from langchain_openai import OpenAIEmbeddings
 from elevenlabs.client import ElevenLabs
 from elevenlabs import play
 
-from fastapi import UploadFile
-
+from langchain_openai import ChatOpenAI
 from openai import OpenAI
 openai_client = OpenAI()
 
-# from langchain_ollama import ChatOllama
-# llm = ChatOllama(model="deepseek-r1:32b", temperature=0.3, keep_alive=int(os.getenv('KEEP_ALIVE')), max_tokens=5000)
-# mini_llm = ChatOllama(model="aya-expanse:32b", temperature=0, max_tokens=5000)
-# mini_llm = ChatOllama(model="phi4:latest", temperature=0, max_tokens=5000)
-
-# from langchain_anthropic import ChatAnthropic
-# llm = ChatAnthropic(model="claude-3-5-sonnet-latest", temperature=0.6, max_tokens=5000)
-
-from langchain_openai import ChatOpenAI
-llm = ChatOpenAI(model="gpt-4o", temperature=0.6, max_tokens=5000)
+llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.6, max_tokens=5000)
 mini_llm = ChatOpenAI(model="gpt-4o-mini", temperature=0, max_tokens=5000)
 
 # from langchain_google_genai import ChatGoogleGenerativeAI
 # llm = ChatGoogleGenerativeAI(model="gemini-2.0-pro-exp-02-05", temperature=0.6, max_tokens=5000)
 # mini_llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash-001", temperature=0, max_tokens=5000)
 
-from langchain_neo4j import Neo4jGraph, GraphCypherQAChain
-graph = Neo4jGraph(url=os.getenv('NEO4J_URI'),
-                   username=os.getenv('NEO4J_USER'),
-                   password=os.getenv('NEO4J_PASS'))
-
 elevanlabs_client = ElevenLabs()
-
-graph_reader = GraphCypherQAChain.from_llm(
-    mini_llm,
-    graph=graph,
-    verbose=True,
-    allow_dangerous_requests=True
-)
 
 def vector_retrieve(query):
     retrieved_docs = vector_store.similarity_search(query, k=1)
@@ -109,6 +88,13 @@ workflow.add_node("model", call_model)
 memory = MemorySaver()
 chat_app = workflow.compile(checkpointer=memory)
 
+def transcribe(audio_path):
+    with open(audio_path, 'rb') as audio_file:
+        return openai_client.audio.transcriptions.create(
+            model="whisper-1",
+            file=audio_file
+        ).text
+
 def rewrite_query(query):
     return mini_llm.invoke(open('prompt_rewriter.txt', 'r').read() + f'{query}').content
 
@@ -118,45 +104,50 @@ def is_about_immunology(query):
                                 f'\n{query}').content
     return judgement.split(':')[0].split('.')[0].split()[0] == 'True'
 
-def text_interaction(query, config, context, lang='English', pprint=False):
+def text_interaction(query, config, context,
+                     lang='English', chat_history: Optional[InMemoryChatMessageHistory]=None, pprint=False):
     rewritten_query = rewrite_query(query)
     if is_about_immunology(rewritten_query):
         context.append(vector_retrieve(rewritten_query))
 
+    if not chat_history:
+        chat_history = InMemoryChatMessageHistory()
+    chat_history.add_message(HumanMessage(query))
+
     input_dict = {
-        "messages": [HumanMessage(query)],
+        "messages": list(chat_history.messages),
         "language": lang,
         "context": context
     }
 
     output= chat_app.invoke(input_dict, config)
+    chat_history.add_message(output["messages"][-1])
+
     if pprint:
         output["messages"][-1].pretty_print()  # output contains all messages in state
         print()
     return output["messages"][-1].content
 
-def transcribe(audio_path):
-    with open(audio_path, 'rb') as audio_file:
-        return openai_client.audio.transcriptions.create(
-            model="whisper-1",
-            file=audio_file
-        ).text
-
-def audio_interaction(audio_path, config, context, lang='English', speak=False) -> Iterator[bytes]:
+def audio_interaction(audio_path, config, context,
+                      lang='English',  chat_history: Optional[InMemoryChatMessageHistory]=None, speak=False) -> Iterator[bytes]:
     query = transcribe(audio_path)
 
     rewritten_query = rewrite_query(query)
     if is_about_immunology(rewritten_query):
         context.append(vector_retrieve(rewritten_query))
 
+    if not chat_history:
+        chat_history = InMemoryChatMessageHistory()
+    chat_history.add_message(HumanMessage(query))
+
     input_dict = {
-        "messages": [HumanMessage(query)],
+        "messages": list(chat_history.messages),
         "language": lang,
         "context": context
     }
 
     output = chat_app.invoke(input_dict, config)
-    # output["messages"][-1].pretty_print()
+    chat_history.add_message(output["messages"][-1])
 
     audio = elevanlabs_client.text_to_speech.convert(
         text=output["messages"][-1].content,
@@ -168,45 +159,6 @@ def audio_interaction(audio_path, config, context, lang='English', speak=False) 
         play(audio)
     return audio
 
-def text_stream(query, config, context, lang='English', pprint=False):
-    rewritten_query = rewrite_query(query)
-    if is_about_immunology(rewritten_query):
-        context.append(vector_retrieve(rewritten_query))
-
-    input_dict = {
-        "messages": [HumanMessage(query)],
-        "language": lang,
-        "context": context
-    }
-
-    for chunk in chat_app.stream(input_dict, config):
-        yield chunk['model']['messages']['content']
-
-def audio_stream(audio_path, config, context, lang='English'):
-    query = transcribe(audio_path)
-
-    rewritten_query = rewrite_query(query)
-    if is_about_immunology(rewritten_query):
-        context.append(vector_retrieve(rewritten_query))
-
-    input_dict = {
-        "messages": [HumanMessage(query)],
-        "language": lang,
-        "context": context
-    }
-
-    output = chat_app.invoke(input_dict, config)
-
-    audio = elevanlabs_client.text_to_speech.convert_as_stream(
-        text=output["messages"][-1].content,
-        voice_id=os.getenv('ELEVEN_LABS_VOICE_ID'),
-        model_id="eleven_multilingual_v2",
-        output_format="mp3_44100_128",
-    )
-
-    for chunk in audio:
-        if isinstance(chunk, bytes):
-            yield chunk
 
 if __name__ == '__main__':
 
@@ -219,5 +171,4 @@ if __name__ == '__main__':
     while True:
         query_input = input('User: ')
         print()
-        for chunk in text_stream(query_input, configuration, ctx, language):
-            print(chunk, end=' ')
+        text_interaction(query_input, configuration, ctx, language, pprint=True)
