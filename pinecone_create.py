@@ -8,7 +8,10 @@ pc = Pinecone(api_key=os.getenv('PINECONE_API_KEY'))
 
 index_name = os.getenv("PINECONE_INDEX")
 
-pc.delete_index(name=index_name)
+try:
+    pc.delete_index(name=index_name)
+except:
+    pass
 
 pc.create_index(
     name=index_name,

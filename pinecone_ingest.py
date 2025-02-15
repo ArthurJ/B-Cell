@@ -1,6 +1,8 @@
 from dotenv import load_dotenv
 load_dotenv()
 
+from pathlib import Path
+
 import os
 from langchain_pinecone import PineconeVectorStore
 from pinecone import Pinecone
@@ -10,23 +12,27 @@ from langchain_openai import OpenAIEmbeddings
 from langchain_experimental.text_splitter import SemanticChunker
 
 embeddings = OpenAIEmbeddings(model='text-embedding-3-large')
-pdf_paths = glob.glob("knowledge/**/*.pdf", recursive=True)
-md_paths = glob.glob("knowledge/**/*.md", recursive=True)
 
+pdf_paths = glob.glob("knowledge/Originals/**/*.pdf", recursive=True)
+md_paths = glob.glob("knowledge/Summaries/**/*.md", recursive=True)
 pages = []
-for file_path in pdf_paths:
-    loader = PyPDFLoader(file_path)
-    for page in loader.lazy_load():
-        pages.append(page)
+
+# for file_path in pdf_paths:
+#     if Path(file_path).is_file():
+#         print(file_path)
+#         loader = PyPDFLoader(file_path)
+#         for page in loader.lazy_load():
+#             pages.append(page)
 
 for file_path in md_paths:
-    loader = UnstructuredMarkdownLoader(file_path)
-    for page in loader.lazy_load():
-        pages.append(page)
+    if Path(file_path).is_file():
+        print(file_path)
+        loader = UnstructuredMarkdownLoader(file_path)
+        for page in loader.lazy_load():
+            pages.append(page)
 
 
-
-text_splitter = SemanticChunker(OpenAIEmbeddings(),
+text_splitter = SemanticChunker(embeddings,
                                 breakpoint_threshold_type="gradient")
 
 all_splits = text_splitter.split_documents(pages)
