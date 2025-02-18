@@ -30,7 +30,7 @@ def read_root():
 async def new_chat(lang:str = 'English'):
     chat_id = token_hex()
     chat = Chat(thread_id=chat_id,
-                context=deque(maxlen=3),
+                context=deque(maxlen=20),
                 language=lang,
                 memory=InMemoryChatMessageHistory())
     chats[chat_id] = chat
@@ -51,10 +51,10 @@ async def send_text(chat_id:str, message:str):
                               chat.memory)
     return {'ai_message': output}
 
-@app.get("/chat/audio/{chat_id}")
+@app.post("/chat/audio/{chat_id}")
 async def send_audio(chat_id:str,
                      audio: Annotated[UploadFile,
-                                      File(description="filetypes: flac, m4a, mp3, mp4, mpeg, oga, ogg, wav, webm")]=None):
+                     File(description="filetypes: flac, m4a, mp3, mp4, mpeg, oga, ogg, wav, webm")]=None):
     if not audio:
         return
 

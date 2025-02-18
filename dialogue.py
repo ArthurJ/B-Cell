@@ -29,7 +29,7 @@ from langchain_openai import ChatOpenAI
 from openai import OpenAI
 openai_client = OpenAI()
 
-llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.6, max_tokens=5000)
+llm = ChatOpenAI(model="gpt-4o", temperature=0.6, max_tokens=5000)
 mini_llm = ChatOpenAI(model="gpt-4o-mini", temperature=0, max_tokens=5000)
 
 # from langchain_google_genai import ChatGoogleGenerativeAI
@@ -39,7 +39,7 @@ mini_llm = ChatOpenAI(model="gpt-4o-mini", temperature=0, max_tokens=5000)
 elevanlabs_client = ElevenLabs()
 
 def vector_retrieve(query):
-    retrieved_docs = vector_store.similarity_search(query, k=1)
+    retrieved_docs = vector_store.similarity_search(query, k=5)
     return retrieved_docs
 
 embeddings = OpenAIEmbeddings(model='text-embedding-3-large')
@@ -107,8 +107,9 @@ def is_about_immunology(query):
 def text_interaction(query, config, context,
                      lang='English', chat_history: Optional[InMemoryChatMessageHistory]=None, pprint=False):
     rewritten_query = rewrite_query(query)
-    if is_about_immunology(rewritten_query):
-        context.append(vector_retrieve(rewritten_query))
+    # if is_about_immunology(rewritten_query):
+    #     context.append(vector_retrieve(rewritten_query))
+    context.append(vector_retrieve(rewritten_query))
 
     if not chat_history:
         chat_history = InMemoryChatMessageHistory()
@@ -128,13 +129,14 @@ def text_interaction(query, config, context,
         print()
     return output["messages"][-1].content
 
-def audio_interaction(audio_path, config, context,
+def audio_interaction(audio_path, config, context:deque,
                       lang='English',  chat_history: Optional[InMemoryChatMessageHistory]=None, speak=False) -> Iterator[bytes]:
     query = transcribe(audio_path)
 
     rewritten_query = rewrite_query(query)
-    if is_about_immunology(rewritten_query):
-        context.append(vector_retrieve(rewritten_query))
+    # if is_about_immunology(rewritten_query):
+    #     context.append(vector_retrieve(rewritten_query))
+    context.append(vector_retrieve(rewritten_query))
 
     if not chat_history:
         chat_history = InMemoryChatMessageHistory()
@@ -165,10 +167,11 @@ if __name__ == '__main__':
     # language = 'Português Brasileiro'
     language = 'English'
     thread_id = str(datetime.now())
-    ctx = deque(maxlen=3)
+    ctx = deque(maxlen=20)
 
     configuration = {"configurable": {"thread_id": thread_id}}
     while True:
         query_input = input('User: ')
         print()
         text_interaction(query_input, configuration, ctx, language, pprint=True)
+
