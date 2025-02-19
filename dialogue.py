@@ -53,7 +53,7 @@ prompt = ChatPromptTemplate.from_messages(
 )
 
 trimmer = trim_messages(
-    max_tokens=int(os.environ['CONTEXT_WINDOW_SIZE']),
+    max_tokens=int(os.environ['CONTEXT_WINDOW_SIZE'])//5,
     strategy="last",
     token_counter=ChatOpenAI(model="gpt-4o-mini"), #lambda x: len(x),
     include_system=True,
@@ -88,10 +88,17 @@ workflow.add_node("model", call_model)
 memory = MemorySaver()
 chat_app = workflow.compile(checkpointer=memory)
 
-def transcribe(audio_path):
+def transcribe(audio_path, lang=None):
+    if not lang:
+        with open(audio_path, 'rb') as audio_file:
+            return openai_client.audio.transcriptions.create(
+                model="whisper-1",
+                file=audio_file
+            ).text
     with open(audio_path, 'rb') as audio_file:
         return openai_client.audio.transcriptions.create(
             model="whisper-1",
+            language=lang,
             file=audio_file
         ).text
 
@@ -106,6 +113,15 @@ def is_about_immunology(query):
 
 def text_interaction(query, config, context,
                      lang='English', chat_history: Optional[InMemoryChatMessageHistory]=None, pprint=False):
+    """
+    :param query:
+    :param config:
+    :param context:
+    :param lang: Input language in [ISO-639-1](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes)
+    :param chat_history:
+    :param pprint:
+    :return:
+    """
     rewritten_query = rewrite_query(query)
     # if is_about_immunology(rewritten_query):
     #     context.append(vector_retrieve(rewritten_query))
@@ -130,8 +146,17 @@ def text_interaction(query, config, context,
     return output["messages"][-1].content
 
 def audio_interaction(audio_path, config, context:deque,
-                      lang='English',  chat_history: Optional[InMemoryChatMessageHistory]=None, speak=False) -> Iterator[bytes]:
-    query = transcribe(audio_path)
+                      lang, chat_history: Optional[InMemoryChatMessageHistory]=None, speak=False) -> Iterator[bytes]:
+    """
+    :param audio_path:
+    :param config:
+    :param context:
+    :param lang: Input language in [ISO-639-1](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes)
+    :param chat_history:
+    :param speak:
+    :return:
+    """
+    query = transcribe(audio_path, lang)
 
     rewritten_query = rewrite_query(query)
     # if is_about_immunology(rewritten_query):
@@ -164,8 +189,8 @@ def audio_interaction(audio_path, config, context:deque,
 
 if __name__ == '__main__':
 
-    # language = 'Português Brasileiro'
-    language = 'English'
+    # language = 'pt'
+    language = 'en'
     thread_id = str(datetime.now())
     ctx = deque(maxlen=20)
 

@@ -4,7 +4,7 @@ from typing import Annotated
 import logging
 
 from fastapi import FastAPI, HTTPException, File, UploadFile
-from fastapi.responses import StreamingResponse, FileResponse
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 
 from secrets import token_hex
@@ -27,10 +27,10 @@ def read_root():
     raise HTTPException(status_code=404)
 
 @app.get("/new-chat")
-async def new_chat(lang:str = 'English'):
+async def new_chat(lang:str = 'en'):
     chat_id = token_hex()
     chat = Chat(thread_id=chat_id,
-                context=deque(maxlen=20),
+                context=deque(maxlen=3),
                 language=lang,
                 memory=InMemoryChatMessageHistory())
     chats[chat_id] = chat
@@ -84,5 +84,5 @@ async def send_audio(chat_id:str,
                             delete=False) as audio_file:
         audio_file.write(b''.join(output))
         LOG.info(f.name)
-        return FileResponse(audio_file.name)
+        return FileResponse(audio_file.name, media_type='audio/mpeg')
 
