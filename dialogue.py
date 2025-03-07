@@ -29,7 +29,7 @@ from langchain_openai import ChatOpenAI
 from openai import OpenAI
 openai_client = OpenAI()
 
-llm = ChatOpenAI(model="gpt-4o", temperature=0.6, max_tokens=5000)
+llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.6, max_tokens=5000)
 mini_llm = ChatOpenAI(model="gpt-4o-mini", temperature=0, max_tokens=5000)
 
 # from langchain_google_genai import ChatGoogleGenerativeAI
@@ -112,7 +112,7 @@ def is_about_immunology(query):
     return judgement.split(':')[0].split('.')[0].split()[0] == 'True'
 
 def text_interaction(query, config, context,
-                     lang='English', chat_history: Optional[InMemoryChatMessageHistory]=None, pprint=False):
+                     lang='en', chat_history: Optional[InMemoryChatMessageHistory]=None, pprint=False):
     """
     :param query:
     :param config:

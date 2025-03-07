@@ -1,0 +1,5 @@
+cd /root/workspace/B-Cell/ && source .venv/bin/activate && nohup fastapi run bcell_api.py --reload > ~/logs/nohup.out 2>&1 &
+
+logrotate -s /var/log/logstatus /root/workspace/B-Cell/logrotate.conf
+
+find /tmp/*.mp3 -type f -mmin +60 -delete
