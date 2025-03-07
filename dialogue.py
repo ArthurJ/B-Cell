@@ -111,17 +111,18 @@ def is_about_immunology(query):
                                 f'\n{query}').content
     return judgement.split(':')[0].split('.')[0].split()[0] == 'True'
 
+def text_to_speech(text_content):
+    audio = elevanlabs_client.text_to_speech.convert(
+        text=text_content,
+        voice_id=os.getenv('ELEVEN_LABS_VOICE_ID'),
+        model_id="eleven_multilingual_v2",
+        output_format="mp3_44100_128",
+    )
+    return audio
+
+# lang: Input language in [ISO-639-1](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes)
 def text_interaction(query, config, context,
                      lang='en', chat_history: Optional[InMemoryChatMessageHistory]=None, pprint=False):
-    """
-    :param query:
-    :param config:
-    :param context:
-    :param lang: Input language in [ISO-639-1](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes)
-    :param chat_history:
-    :param pprint:
-    :return:
-    """
     rewritten_query = rewrite_query(query)
     # if is_about_immunology(rewritten_query):
     #     context.append(vector_retrieve(rewritten_query))
@@ -145,43 +146,17 @@ def text_interaction(query, config, context,
         print()
     return output["messages"][-1].content
 
+def mixed_interaction(query, config, context, lang='en',
+                      chat_history: Optional[InMemoryChatMessageHistory]=None) -> Iterator[bytes]:
+    text_content = text_interaction(query, config, context, lang, chat_history)
+    return text_to_speech(text_content)
+
 def audio_interaction(audio_path, config, context:deque,
-                      lang, chat_history: Optional[InMemoryChatMessageHistory]=None, speak=False) -> Iterator[bytes]:
-    """
-    :param audio_path:
-    :param config:
-    :param context:
-    :param lang: Input language in [ISO-639-1](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes)
-    :param chat_history:
-    :param speak:
-    :return:
-    """
+                      lang='en', chat_history: Optional[InMemoryChatMessageHistory]=None, speak=False) \
+        -> Iterator[bytes]:
     query = transcribe(audio_path, lang)
-
-    rewritten_query = rewrite_query(query)
-    # if is_about_immunology(rewritten_query):
-    #     context.append(vector_retrieve(rewritten_query))
-    context.append(vector_retrieve(rewritten_query))
-
-    if not chat_history:
-        chat_history = InMemoryChatMessageHistory()
-    chat_history.add_message(HumanMessage(query))
-
-    input_dict = {
-        "messages": list(chat_history.messages),
-        "language": lang,
-        "context": context
-    }
-
-    output = chat_app.invoke(input_dict, config)
-    chat_history.add_message(output["messages"][-1])
-
-    audio = elevanlabs_client.text_to_speech.convert(
-        text=output["messages"][-1].content,
-        voice_id=os.getenv('ELEVEN_LABS_VOICE_ID'),
-        model_id="eleven_multilingual_v2",
-        output_format="mp3_44100_128",
-    )
+    text_content = text_interaction(query, config, context, lang, chat_history)
+    audio = text_to_speech(text_content)
     if speak:
         play(audio)
     return audio

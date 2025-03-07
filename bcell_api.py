@@ -11,7 +11,7 @@ from pydantic import BaseModel
 from secrets import token_hex
 
 from langchain_core.chat_history import InMemoryChatMessageHistory
-from dialogue import text_interaction, audio_interaction
+from dialogue import text_interaction, audio_interaction, mixed_interaction
 
 app = FastAPI(title='API')
 
@@ -57,10 +57,37 @@ def send_text(chat_id:str, message:str):
                               chat.memory)
     return {'ai_message': output}
 
+@app.get("/chat/last-text/{chat_id}")
+def get_last_message(chat_id:str):
+    if chat_id not in chats:
+        raise HTTPException(status_code=404, detail="Chat not found.")
+    chat: Chat = chats[chat_id]
+    return {'ai_message': chat.memory.messages[-1].content}
+
+@app.get("/chat/audio/{chat_id}")
+def send_text(chat_id:str, message:str):
+    if not message:
+        return
+    if chat_id not in chats:
+        raise HTTPException(status_code=404, detail="Chat not found.")
+    chat: Chat = chats[chat_id]
+
+    audio_output = mixed_interaction(message,
+                                     {"configurable": {"thread_id": chat_id}},
+                                     chat.context,
+                                     chat.language,
+                                     chat.memory)
+    with NamedTemporaryFile(suffix='mp3',
+                            delete_on_close=False,
+                            delete=False) as audio_file:
+        audio_file.write(b''.join(audio_output))
+        app_logger.info(f'Audio sent: {audio_file.name}')
+        return  FileResponse(audio_file.name, media_type='audio/mpeg')
+
 @app.post("/chat/audio/{chat_id}")
 def send_audio(chat_id:str,
-                     audio: Annotated[UploadFile,
-                     File(description="filetypes: flac, m4a, mp3, mp4, mpeg, oga, ogg, wav, webm")]=None):
+               audio: Annotated[UploadFile,
+               File(description="filetypes: flac, m4a, mp3, mp4, mpeg, oga, ogg, wav, webm")]=None):
     if not audio:
         return
 
@@ -71,24 +98,24 @@ def send_audio(chat_id:str,
     suffix = '.' + audio.filename.split('.')[-1]
     try:
         contents = audio.file.read()
-        with NamedTemporaryFile(suffix=suffix) as f:
+        with (NamedTemporaryFile(suffix=suffix) as f):
             f.write(contents)
             app_logger.info(f'Audio received: {f.name}')
-            output = audio_interaction(f.name,
-                                       {"configurable": {"thread_id": chat_id}},
-                                       chat.context,
-                                       chat.language,
-                                       chat.memory)
+            audio_output = audio_interaction(f.name,
+                                             {"configurable": {"thread_id": chat_id}},
+                                             chat.context,
+                                             chat.language,
+                                             chat.memory)
     except Exception as e:
         app_logger.error(str(e), exc_info=True)
         raise HTTPException(status_code=500, detail=f'Something went wrong:\n{str(e)}')
     finally:
         audio.file.close()
 
-    with NamedTemporaryFile(suffix=suffix,
+    with NamedTemporaryFile(suffix='.mp3',
                             delete_on_close=False,
                             delete=False) as audio_file:
-        audio_file.write(b''.join(output))
-        app_logger.info(f'Audio sent: {f.name}')
+        audio_file.write(b''.join(audio_output))
+        app_logger.info(f'Audio sent: {audio_file.name}')
         return FileResponse(audio_file.name, media_type='audio/mpeg')
 
