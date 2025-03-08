@@ -1,3 +1,4 @@
+import json
 import os
 from collections import deque
 from datetime import datetime
@@ -28,6 +29,8 @@ from elevenlabs import play
 from langchain_openai import ChatOpenAI
 from openai import OpenAI
 openai_client = OpenAI()
+
+claims = json.load(open("knowledge/talvey-claims.json", 'r'))
 
 llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.6, max_tokens=5000)
 mini_llm = ChatOpenAI(model="gpt-4o-mini", temperature=0, max_tokens=5000)
@@ -71,6 +74,7 @@ class State(TypedDict):
     messages: Annotated[Sequence[BaseMessage], add_messages]
     language: str
     context: List[Document]
+    talvey_context: str
 
 workflow = StateGraph(state_schema=State)
 
@@ -135,7 +139,8 @@ def text_interaction(query, config, context,
     input_dict = {
         "messages": list(chat_history.messages),
         "language": lang,
-        "context": context
+        "context": context,
+        "talvey_context": claims
     }
 
     output= chat_app.invoke(input_dict, config)
@@ -174,4 +179,3 @@ if __name__ == '__main__':
         query_input = input('User: ')
         print()
         text_interaction(query_input, configuration, ctx, language, pprint=True)
-

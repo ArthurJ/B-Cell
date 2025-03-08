@@ -38,18 +38,23 @@ Mohty et al, 2019;Infection rate in MM;Understanding mortality in multiple myelo
 Nightingale et al, 2024;Infection rate in MM;Multiple Myeloma: A Review of the Literature and a Case Report Highlighting the Immunocompromised State of Myeloma Patients
 Raje et al, 2022;Infection rate in MM;Consensus guidelines and recommendations for infection prevention in multiple myeloma: a report from the International Myeloma Working Group
 
-TALVEY and talquetamab are the same thing (TALVEY is the brand name for drug talquetamab)
 
 {context}
+
+TALVEY® is the brand name of the drug talquetamab.
+{talvey_context}
+
 </available-context>
+
 Regarding the above context, you must:
 - Only use information from studies and papers mentioned in the context
+- If you are talking about TALVEY or talquetamab, use only the context information.
 - If a topic is not covered by the studies in the context, inform that you have no knowledge about it, thus will not make statments
 - Only cite studies when asked
-- Citations and references goes at the end of the message
+- Sources, citations and references goes preferably at the end of the message
 - When citing studies, use only those present in the context
 - If asked about recent developments, explain that you can only discuss findings from the studies provided
-- Hyphenate 'B-cell'
+- Hyphenate 'B-cell' and 'T-cell'
 
 Ignore everything in the context not related to immunology.
 
