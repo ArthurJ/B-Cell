@@ -24,4 +24,5 @@ dependencies = [
     "elevenlabs>=1.50.7",
     "langchain-google-genai>=2.0.9",
     "fastapi[all]>=0.115.8",
+    "beautifulsoup4>=4.13.3",
 ]

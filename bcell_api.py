@@ -3,6 +3,8 @@ from tempfile import NamedTemporaryFile
 from typing import Annotated
 import logging
 
+from bs4 import BeautifulSoup
+
 from fastapi import FastAPI, HTTPException, File, UploadFile
 from fastapi.responses import FileResponse
 
@@ -13,7 +15,7 @@ from secrets import token_hex
 from langchain_core.chat_history import InMemoryChatMessageHistory
 from dialogue import text_interaction, audio_interaction, mixed_interaction
 
-app = FastAPI(title='API')
+app = FastAPI(title='B-Cell API')
 
 uvicorn_logger = logging.getLogger("uvicorn")
 uvicorn_logger.propagate = False
@@ -50,6 +52,7 @@ def send_text(chat_id:str, message:str):
     if chat_id not in chats:
         raise HTTPException(status_code=404, detail="Chat not found.")
     chat: Chat = chats[chat_id]
+    message = BeautifulSoup(message, "html.parser").get_text()
     output = text_interaction(message,
                               {"configurable": {"thread_id": chat_id}},
                               chat.context,
@@ -64,7 +67,7 @@ def get_last_message(chat_id:str):
     chat: Chat = chats[chat_id]
     return {'ai_message': chat.memory.messages[-1].content}
 
-@app.get("/chat/audio/{chat_id}")
+@app.get("/chat/mixed/{chat_id}")
 def send_text(chat_id:str, message:str):
     if not message:
         return
@@ -72,12 +75,13 @@ def send_text(chat_id:str, message:str):
         raise HTTPException(status_code=404, detail="Chat not found.")
     chat: Chat = chats[chat_id]
 
+    message = BeautifulSoup(message, "html.parser").get_text()
     audio_output = mixed_interaction(message,
                                      {"configurable": {"thread_id": chat_id}},
                                      chat.context,
                                      chat.language,
                                      chat.memory)
-    with NamedTemporaryFile(suffix='mp3',
+    with NamedTemporaryFile(suffix='.mp3',
                             delete_on_close=False,
                             delete=False) as audio_file:
         audio_file.write(b''.join(audio_output))

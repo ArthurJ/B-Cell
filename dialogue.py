@@ -1,5 +1,6 @@
 import json
 import os
+import logging
 from collections import deque
 from datetime import datetime
 
@@ -30,14 +31,17 @@ from langchain_openai import ChatOpenAI
 from openai import OpenAI
 openai_client = OpenAI()
 
+dialog_logger = logging.getLogger(__name__)
 claims = json.load(open("knowledge/talvey-claims.json", 'r'))
 
 llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.6, max_tokens=5000)
-mini_llm = ChatOpenAI(model="gpt-4o-mini", temperature=0, max_tokens=5000)
+rewriter_llm = ChatOpenAI(model="gpt-4o-mini", temperature=0, max_tokens=5000)
+judge_llm = ChatOpenAI(model="gpt-4o-mini", temperature=0, max_tokens=2)
 
 # from langchain_google_genai import ChatGoogleGenerativeAI
 # llm = ChatGoogleGenerativeAI(model="gemini-2.0-pro-exp-02-05", temperature=0.6, max_tokens=5000)
-# mini_llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash-001", temperature=0, max_tokens=5000)
+# rewriter_llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash-001", temperature=0, max_tokens=5000)
+# judge_llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash-001", temperature=0, max_tokens=2)
 
 elevanlabs_client = ElevenLabs()
 
@@ -95,22 +99,26 @@ chat_app = workflow.compile(checkpointer=memory)
 def transcribe(audio_path, lang=None):
     if not lang:
         with open(audio_path, 'rb') as audio_file:
-            return openai_client.audio.transcriptions.create(
+            transcription = openai_client.audio.transcriptions.create(
                 model="whisper-1",
                 file=audio_file
             ).text
+            dialog_logger.info(f'Transcription: {transcription}')
+            return transcription
     with open(audio_path, 'rb') as audio_file:
-        return openai_client.audio.transcriptions.create(
+        transcription = openai_client.audio.transcriptions.create(
             model="whisper-1",
             language=lang,
             file=audio_file
         ).text
+        dialog_logger.info(f'Transcription: {transcription}')
+        return transcription
 
 def rewrite_query(query):
-    return mini_llm.invoke(open('prompt_rewriter.txt', 'r').read() + f'{query}').content
+    return rewriter_llm.invoke(open('prompt_rewriter.txt', 'r').read() + f'{query}').content
 
 def is_about_immunology(query):
-    judgement = mini_llm.invoke('Just True or False: Does the following sentence '
+    judgement = judge_llm.invoke('Just True or False: Does the following sentence '
                                 'contains **relevant** content or question about immunology?'
                                 f'\n{query}').content
     return judgement.split(':')[0].split('.')[0].split()[0] == 'True'
