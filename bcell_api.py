@@ -1,7 +1,7 @@
+import logging
 from collections import deque
 from tempfile import NamedTemporaryFile
 from typing import Annotated
-import logging
 
 from bs4 import BeautifulSoup
 
