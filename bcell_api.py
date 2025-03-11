@@ -17,6 +17,17 @@ from langchain_core.chat_history import InMemoryChatMessageHistory
 from dialogue import text_interaction, audio_interaction, mixed_interaction
 
 app = FastAPI(title='B-Cell API')
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "https://audiofb.com",
+        "https://audiofb.com/b-cell/audio/",
+        "*"
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 uvicorn_logger = logging.getLogger("uvicorn")
 uvicorn_logger.propagate = False
