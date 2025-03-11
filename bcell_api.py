@@ -7,6 +7,7 @@ from bs4 import BeautifulSoup
 
 from fastapi import FastAPI, HTTPException, File, UploadFile
 from fastapi.responses import FileResponse
+from fastapi.middleware.cors import CORSMiddleware
 
 from pydantic import BaseModel
 
@@ -68,7 +69,7 @@ def get_last_message(chat_id:str):
     return {'ai_message': chat.memory.messages[-1].content}
 
 @app.get("/chat/mixed/{chat_id}")
-def send_text(chat_id:str, message:str):
+def send_mixed(chat_id:str, message:str):
     if not message:
         return
     if chat_id not in chats:
@@ -102,7 +103,7 @@ def send_audio(chat_id:str,
     suffix = '.' + audio.filename.split('.')[-1]
     try:
         contents = audio.file.read()
-        with (NamedTemporaryFile(suffix=suffix) as f):
+        with NamedTemporaryFile(suffix=suffix) as f:
             f.write(contents)
             app_logger.info(f'Audio received: {f.name}')
             audio_output = audio_interaction(f.name,
