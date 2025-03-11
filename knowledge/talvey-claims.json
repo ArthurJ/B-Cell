@@ -23,7 +23,7 @@
       "myeloma_cells": "High",
       "normal_B_cells": "Low/Limited",
       "normal_tissues": "Minimal expression in essential tissues such as brain, heart, and lungs",
-      "other_tumors": "No substantial expression in other tumor types"
+      "other_tumours": "No substantial expression in other tumour types"
     },
     "action": "Redirects T-cells to target GPRC5D-expressing myeloma cells",
     "advantages": [
