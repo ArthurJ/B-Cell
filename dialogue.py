@@ -96,23 +96,15 @@ workflow.add_node("model", call_model)
 memory = MemorySaver()
 chat_app = workflow.compile(checkpointer=memory)
 
-def transcribe(audio_path, lang=None):
-    if not lang:
-        with open(audio_path, 'rb') as audio_file:
-            transcription = openai_client.audio.transcriptions.create(
-                model="whisper-1",
-                file=audio_file
-            ).text
-            dialog_logger.info(f'Transcription: {transcription}')
-            return transcription
+def transcribe(audio_path, lang='en'):
     with open(audio_path, 'rb') as audio_file:
         transcription = openai_client.audio.transcriptions.create(
-            model="whisper-1",
-            language=lang,
-            file=audio_file
-        ).text
-        dialog_logger.info(f'Transcription: {transcription}')
-        return transcription
+                    model="whisper-1",
+                    file=audio_file,
+                    language=lang
+                ).text
+    dialog_logger.info(f'Transcription: {transcription}')
+    return transcription
 
 def rewrite_query(query):
     return rewriter_llm.invoke(open('prompt_rewriter.txt', 'r').read() + f'{query}').content
