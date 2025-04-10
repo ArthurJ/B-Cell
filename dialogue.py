@@ -121,6 +121,13 @@ def text_to_speech(text_content):
         voice_id=os.getenv('ELEVEN_LABS_VOICE_ID'),
         model_id="eleven_multilingual_v2",
         output_format="mp3_44100_128",
+        voice_settings={
+            "stability": 0.4,
+            "similarity_boost": 0.75,
+            "style": 0,
+            "use_speaker_boost": True,
+            "speed": 1,
+        }
     )
     return audio
 

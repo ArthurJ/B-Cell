@@ -1,4 +1,5 @@
 import logging
+import ssl
 from collections import deque
 from tempfile import NamedTemporaryFile
 from typing import Annotated
@@ -19,14 +20,12 @@ from dialogue import text_interaction, audio_interaction, mixed_interaction
 app = FastAPI(title='B-Cell API')
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "https://audiofb.com",
-        "https://audiofb.com/b-cell/audio/",
-        "*"
-    ],
+    # allow_origins=["https://audiofusion.com.br", "https://audiofb.com"], Definir posteriormente a URL para acesso.
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["*"],
 )
 
 uvicorn_logger = logging.getLogger("uvicorn")
