@@ -1,6 +1,7 @@
 import json
 import os
 import logging
+import base64
 from collections import deque
 from datetime import datetime
 
@@ -38,11 +39,6 @@ llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.6, max_tokens=5000)
 rewriter_llm = ChatOpenAI(model="gpt-4o-mini", temperature=0, max_tokens=5000)
 judge_llm = ChatOpenAI(model="gpt-4o-mini", temperature=0, max_tokens=2)
 
-# from langchain_google_genai import ChatGoogleGenerativeAI
-# llm = ChatGoogleGenerativeAI(model="gemini-2.0-pro-exp-02-05", temperature=0.6, max_tokens=5000)
-# rewriter_llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash-001", temperature=0, max_tokens=5000)
-# judge_llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash-001", temperature=0, max_tokens=2)
-
 elevanlabs_client = ElevenLabs()
 
 def vector_retrieve(query):
@@ -62,7 +58,7 @@ prompt = ChatPromptTemplate.from_messages(
 trimmer = trim_messages(
     max_tokens=int(os.environ['CONTEXT_WINDOW_SIZE'])//5,
     strategy="last",
-    token_counter=ChatOpenAI(model="gpt-4o-mini"), #lambda x: len(x),
+    token_counter=ChatOpenAI(model="gpt-4o-mini"),
     include_system=True,
     start_on="human",
 )

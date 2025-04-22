@@ -1,5 +1,4 @@
 import logging
-import ssl
 from collections import deque
 from tempfile import NamedTemporaryFile
 from typing import Annotated
@@ -133,4 +132,3 @@ def send_audio(chat_id:str,
         audio_file.write(b''.join(audio_output))
         app_logger.info(f'Audio sent: {audio_file.name}')
         return FileResponse(audio_file.name, media_type='audio/mpeg')
-

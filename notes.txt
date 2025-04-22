@@ -1,5 +1,5 @@
-cd /root/workspace/B-Cell/ && source .venv/bin/activate && nohup fastapi run bcell_api.py --reload >> ~/logs/nohup.out 2>&1 &
-cd /root/workspace/B-Cell_https/ && source .venv/bin/activate && nohup uvicorn bcell_api:app --ssl-keyfile key.rsa --ssl-certfile cert.crt --host 0.0.0.0  --port 8010 --reload >> ~/logs/nohup_https.out 2>&1 &
+cd /root/workspace/B-Cell/ && source .venv/bin/activate.fish && nohup uvicorn bcell_api:app --host 0.0.0.0  --port 8010 --reload >> ~/logs/nohup.out 2>&1 &
+cd /root/workspace/B-Cell/ && source .venv/bin/activate.fish && nohup uvicorn bcell_api:app --host 0.0.0.0  --port 8000 --reload >> ~/logs/nohup_http.out 2>&1 &
 
 
 logrotate -s /var/log/logstatus /root/workspace/B-Cell/logrotate.conf

@@ -25,4 +25,6 @@ dependencies = [
     "langchain-google-genai>=2.0.9",
     "fastapi[all]>=0.115.8",
     "beautifulsoup4>=4.13.3",
+    "uvicorn>=0.34.1",
+    "typing-extensions>=4.13.2",
 ]
