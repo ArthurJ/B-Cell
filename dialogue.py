@@ -1,20 +1,21 @@
 import json
 import os
 import logging
-import base64
 from collections import deque
 from datetime import datetime
 
 from dotenv import load_dotenv
 load_dotenv()
 
+from agent_tools import tools
 from typing import Sequence, List, Iterator, Optional
 from typing_extensions import Annotated, TypedDict
 
 from langchain_core.messages import HumanMessage, trim_messages, AIMessage
 from langgraph.checkpoint.memory import MemorySaver
-from langgraph.graph import START, StateGraph
+from langgraph.graph import START, StateGraph, END
 
+from langgraph.prebuilt import ToolNode
 from langchain_core.messages import BaseMessage
 from langgraph.graph.message import add_messages
 from langchain_core.documents import Document
@@ -30,14 +31,17 @@ from elevenlabs import play
 
 from langchain_openai import ChatOpenAI
 from openai import OpenAI
+
+load_dotenv()
+
+llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.6, max_tokens=5000)
+
 openai_client = OpenAI()
 
 dialog_logger = logging.getLogger(__name__)
 claims = json.load(open("knowledge/talvey-claims.json", 'r'))
 
-llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.6, max_tokens=5000)
-rewriter_llm = ChatOpenAI(model="gpt-4o-mini", temperature=0, max_tokens=5000)
-judge_llm = ChatOpenAI(model="gpt-4o-mini", temperature=0, max_tokens=2)
+tooled_llm = llm.bind_tools(tools)
 
 elevanlabs_client = ElevenLabs()
 
@@ -62,13 +66,7 @@ trimmer = trim_messages(
     include_system=True,
     start_on="human",
 )
-
-def lobotomy(msg: AIMessage):
-    if '</think>' in msg.content:
-        return {"role":"assistant", "content":msg.content.split('</think>')[1]}
-    return {"role": "assistant", "content": msg.content}
-
-runnable = prompt | trimmer | llm | lobotomy
+runnable = prompt | trimmer | tooled_llm
 
 class State(TypedDict):
     messages: Annotated[Sequence[BaseMessage], add_messages]
@@ -77,6 +75,17 @@ class State(TypedDict):
     talvey_context: str
 
 workflow = StateGraph(state_schema=State)
+
+tool_executor = ToolNode(tools)
+def should_continue(state: State) -> str:
+    last_message = state['messages'][-1]
+    # Call the tool if the last AI message asks for it
+    if (isinstance(last_message, AIMessage)
+            and hasattr(last_message, 'tool_calls')
+            and last_message.tool_calls):
+        return "call_tools"
+    else:
+        return END
 
 # Define the function that calls the model
 # and update message history with response
@@ -88,6 +97,16 @@ def call_model(state: State):
 # Define the (single) node in the graph
 workflow.add_edge(START, "model")
 workflow.add_node("model", call_model)
+workflow.add_node("call_tools", tool_executor)
+workflow.add_conditional_edges(
+    "model",
+    should_continue,
+    {
+        "call_tools": "call_tools",
+        END: END
+    }
+)
+workflow.add_edge("call_tools", "model")
 
 memory = MemorySaver()
 chat_app = workflow.compile(checkpointer=memory)
@@ -101,15 +120,6 @@ def transcribe(audio_path, lang='en'):
                 ).text
     dialog_logger.info(f'Transcription: {transcription}')
     return transcription
-
-def rewrite_query(query):
-    return rewriter_llm.invoke(open('prompt_rewriter.txt', 'r').read() + f'{query}').content
-
-def is_about_immunology(query):
-    judgement = judge_llm.invoke('Just True or False: Does the following sentence '
-                                'contains **relevant** content or question about immunology?'
-                                f'\n{query}').content
-    return judgement.split(':')[0].split('.')[0].split()[0] == 'True'
 
 def text_to_speech(text_content):
     audio = elevanlabs_client.text_to_speech.convert(
@@ -130,10 +140,6 @@ def text_to_speech(text_content):
 # lang: Input language in [ISO-639-1](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes)
 def text_interaction(query, config, context,
                      lang='en', chat_history: Optional[InMemoryChatMessageHistory]=None, pprint=False):
-    rewritten_query = rewrite_query(query)
-    # if is_about_immunology(rewritten_query):
-    #     context.append(vector_retrieve(rewritten_query))
-    context.append(vector_retrieve(rewritten_query))
 
     if not chat_history:
         chat_history = InMemoryChatMessageHistory()
