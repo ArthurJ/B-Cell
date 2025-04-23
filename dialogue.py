@@ -5,7 +5,6 @@ from collections import deque
 from datetime import datetime
 
 from dotenv import load_dotenv
-load_dotenv()
 
 from agent_tools import tools
 from typing import Sequence, List, Iterator, Optional
@@ -45,13 +44,6 @@ tooled_llm = llm.bind_tools(tools)
 
 elevanlabs_client = ElevenLabs()
 
-def vector_retrieve(query):
-    retrieved_docs = vector_store.similarity_search(query, k=5)
-    return retrieved_docs
-
-embeddings = OpenAIEmbeddings(model='text-embedding-3-large')
-vector_store = PineconeVectorStore.from_existing_index(os.getenv('PINECONE_INDEX'), embeddings)
-
 prompt = ChatPromptTemplate.from_messages(
     [
         ("system", open('prompt.txt','r').read()),
@@ -66,6 +58,7 @@ trimmer = trim_messages(
     include_system=True,
     start_on="human",
 )
+
 runnable = prompt | trimmer | tooled_llm
 
 class State(TypedDict):

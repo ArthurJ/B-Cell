@@ -14,7 +14,7 @@ from pydantic import BaseModel
 from secrets import token_hex
 
 from langchain_core.chat_history import InMemoryChatMessageHistory
-from dialogue import text_interaction, audio_interaction, mixed_interaction
+from audio_native_dialogue import text_interaction, audio_interaction, mixed_interaction
 
 app = FastAPI(title='B-Cell API')
 app.add_middleware(
@@ -64,10 +64,10 @@ def send_text(chat_id:str, message:str):
     chat: Chat = chats[chat_id]
     message = BeautifulSoup(message, "html.parser").get_text()
     output = text_interaction(message,
-                              {"configurable": {"thread_id": chat_id}},
-                              chat.context,
-                              chat.language,
-                              chat.memory)
+                         {"configurable": {"thread_id": chat_id}},
+                         chat.context,
+                         chat.language,
+                         chat.memory)
     return {'ai_message': output}
 
 @app.get("/chat/last-text/{chat_id}")
