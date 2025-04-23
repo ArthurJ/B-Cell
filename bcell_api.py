@@ -14,7 +14,7 @@ from pydantic import BaseModel
 from secrets import token_hex
 
 from langchain_core.chat_history import InMemoryChatMessageHistory
-from audio_native_dialogue import text_interaction, audio_interaction, mixed_interaction
+from audio_native_dialog import text_interaction, audio_interaction, mixed_interaction
 
 app = FastAPI(title='B-Cell API')
 app.add_middleware(
