@@ -4,11 +4,13 @@ import os
 import logging
 from collections import deque
 from datetime import datetime
+import asyncio
+from time import time
 
 from dotenv import load_dotenv
 
 from agent_tools import tools
-from typing import Sequence, List, Iterator, Optional
+from typing import Sequence, List, Iterator, Optional, Tuple
 from typing_extensions import Annotated, TypedDict
 
 from langchain_core.messages import HumanMessage, trim_messages, AIMessage
@@ -23,7 +25,7 @@ from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 
 from langchain_core.chat_history import InMemoryChatMessageHistory
 
-from elevenlabs.client import ElevenLabs
+from elevenlabs.client import ElevenLabs, AsyncElevenLabs
 from elevenlabs import play
 
 from langchain_openai import ChatOpenAI
@@ -44,7 +46,15 @@ claims = json.load(open("knowledge/talvey-claims.json", 'r'))
 
 tooled_llm = llm.bind_tools(tools)
 
-elevanlabs_client = ElevenLabs()
+# elevanlabs_client = ElevenLabs()
+elevanlabs_client = AsyncElevenLabs()
+TARGET_VOICE_IDS = [
+    os.getenv('ELEVEN_LABS_VOICE_ID_1'),
+    os.getenv('ELEVEN_LABS_VOICE_ID_2'),
+    os.getenv('ELEVEN_LABS_VOICE_ID_3'),
+]
+DEFAULT_MODEL_ID = "eleven_multilingual_sts_v2"
+DEFAULT_OUTPUT_FORMAT = "mp3_44100_128"
 
 prompt = ChatPromptTemplate.from_messages(
     [
@@ -135,23 +145,38 @@ def text_interaction(query, config, context,
                 lang='en', chat_history: Optional[InMemoryChatMessageHistory]=None):
     return interaction(query, config, context, lang, chat_history)["messages"][-1].content
 
-def voice_convert(encoded_audio):
-    audio = base64.b64decode(encoded_audio)
-    audio = elevanlabs_client.speech_to_speech.convert(
-        audio=audio,
-        voice_id=os.getenv('ELEVEN_LABS_VOICE_ID'),
-        model_id="eleven_multilingual_sts_v2",
-        output_format="mp3_44100_128",
-        )
-    return audio
+async def convert_voice(audio_bytes, voice_id):
+    converted = elevanlabs_client.speech_to_speech.convert(
+        audio=audio_bytes,
+        voice_id=voice_id,  # Garanta que esta variável de ambiente está definida
+        model_id="eleven_multilingual_sts_v2",  # Ou a variável DEFAULT_MODEL_ID se preferir
+        output_format="mp3_44100_128",  # Ou a variável DEFAULT_OUTPUT_FORMAT
+    )
+
+    converted_audio_bytes = b""
+    async for chunk in converted:
+        if chunk:  # Verifica se o chunk não é None ou vazio
+            converted_audio_bytes += chunk
+
+    return converted_audio_bytes
+
+async def gather_voices(encoded_audio):
+    audio_bytes = base64.b64decode(encoded_audio)
+    voice_1 = convert_voice(audio_bytes, os.getenv('ELEVEN_LABS_VOICE_ID_1'))
+    voice_2 = convert_voice(audio_bytes, os.getenv('ELEVEN_LABS_VOICE_ID_2'))
+    voice_3 = convert_voice(audio_bytes, os.getenv('ELEVEN_LABS_VOICE_ID_3'))
+
+    voices = await asyncio.gather(voice_1, voice_2, voice_3)
+    return voices
+
 
 def mixed_interaction(query, config, context, lang='en',
                       chat_history: Optional[InMemoryChatMessageHistory]=None) -> Iterator[bytes]:
     encoded_audio = (interaction(query, config, context, lang, chat_history)["messages"][-1]
                         .additional_kwargs['audio']['data'])
-    return voice_convert(encoded_audio)
+    return asyncio.run(convert_voice(encoded_audio,  os.getenv('ELEVEN_LABS_VOICE_ID_1')))
 
-def audio_interaction(audio_path, config, context:deque,
+async def audio_interaction(audio_path, config, context:deque,
                       lang='en', chat_history: Optional[InMemoryChatMessageHistory]=None, speak=False) \
         -> Iterator[bytes]:
 
@@ -170,17 +195,46 @@ def audio_interaction(audio_path, config, context:deque,
         "talvey_context": claims
     }
 
-    output= chat_app.invoke(input_dict, config)
+    output = chat_app.invoke(input_dict, config)
     chat_history.add_message(output["messages"][-1])
 
     encoded_audio = output["messages"][-1].additional_kwargs['audio']['data']
+    audio_bytes = base64.b64decode(encoded_audio)
+    answer = await convert_voice(audio_bytes, os.getenv('ELEVEN_LABS_VOICE_ID'))
     if speak:
-        play(voice_convert(encoded_audio))
-        # play(base64.b64decode(encoded_audio))
-    return voice_convert(encoded_audio)
+        play(answer)
+        # play(audio_bytes)
+    return answer
 
-if __name__ == '__main__':
+async def voices_interaction(audio_path, config, context:deque,
+                      lang='en', chat_history: Optional[InMemoryChatMessageHistory]=None, speak=False) \
+        -> Tuple[Iterator[bytes]]:
 
+    with open(audio_path, "rb") as f:
+        audio_data = f.read()
+    audio_b64 = base64.b64encode(audio_data).decode()
+
+    if not chat_history:
+        chat_history = InMemoryChatMessageHistory()
+    chat_history.add_message(HumanMessage('', audio={"data": audio_b64}))
+
+    input_dict = {
+        "messages": list(chat_history.messages),
+        "language": lang,
+        "context": context,
+        "talvey_context": claims
+    }
+
+    output = chat_app.invoke(input_dict, config)
+    chat_history.add_message(output["messages"][-1])
+
+    encoded_audio = output["messages"][-1].additional_kwargs['audio']['data']
+    voices = await gather_voices(encoded_audio)
+    if speak:
+        play(voices[0])
+    return voices
+
+async def async_main():
     # language = 'pt'
     language = 'en'
     thread_id = str(datetime.now())
@@ -191,4 +245,11 @@ if __name__ == '__main__':
     #     query_input = input('User: ')
     #     print()
     #     interaction(query_input, configuration, ctx, language, pprint=True)
-    audio_interaction('/home/arthur/Documents/query.mp3', configuration, ctx, language, speak=True)
+    await voices_interaction('/home/arthur/Documents/query.mp3', configuration, ctx, language, speak=True)
+    # await audio_interaction('/home/arthur/Documents/query.mp3', configuration, ctx, language, speak=True)
+
+if __name__ == '__main__':
+    ts = time()
+    asyncio.run(async_main())
+    te = time() - ts
+    print(te)
