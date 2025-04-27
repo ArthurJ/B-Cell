@@ -2,11 +2,13 @@ import logging
 from collections import deque
 from tempfile import NamedTemporaryFile
 from typing import Annotated
+import tempfile
+import os
 
 from bs4 import BeautifulSoup
 
 from fastapi import FastAPI, HTTPException, File, UploadFile
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
 from pydantic import BaseModel
@@ -14,7 +16,8 @@ from pydantic import BaseModel
 from secrets import token_hex
 
 from langchain_core.chat_history import InMemoryChatMessageHistory
-from audio_native_dialog import text_interaction, audio_interaction, mixed_interaction
+from audio_native_dialog import (text_interaction, audio_interaction, mixed_interaction,
+                                 audio_interaction_v2, mixed_interaction_v2)
 
 app = FastAPI(title='B-Cell API')
 app.add_middleware(
@@ -78,7 +81,7 @@ def get_last_message(chat_id:str):
     return {'ai_message': chat.memory.messages[-1].content}
 
 @app.get("/chat/mixed/{chat_id}")
-def send_mixed(chat_id:str, message:str):
+async def send_mixed(chat_id:str, message:str):
     if not message:
         return
     if chat_id not in chats:
@@ -86,7 +89,7 @@ def send_mixed(chat_id:str, message:str):
     chat: Chat = chats[chat_id]
 
     message = BeautifulSoup(message, "html.parser").get_text()
-    audio_output = mixed_interaction(message,
+    audio_output = await mixed_interaction(message,
                                      {"configurable": {"thread_id": chat_id}},
                                      chat.context,
                                      chat.language,
@@ -94,12 +97,12 @@ def send_mixed(chat_id:str, message:str):
     with NamedTemporaryFile(suffix='.mp3',
                             delete_on_close=False,
                             delete=False) as audio_file:
-        audio_file.write(b''.join(audio_output))
+        audio_file.write(audio_output)
         app_logger.info(f'Audio sent: {audio_file.name}')
         return  FileResponse(audio_file.name, media_type='audio/mpeg')
 
 @app.post("/chat/audio/{chat_id}")
-def send_audio(chat_id:str,
+async def send_audio(chat_id:str,
                audio: Annotated[UploadFile,
                File(description="filetypes: flac, m4a, mp3, mp4, mpeg, oga, ogg, wav, webm")]=None):
     if not audio:
@@ -115,7 +118,7 @@ def send_audio(chat_id:str,
         with NamedTemporaryFile(suffix=suffix) as f:
             f.write(contents)
             app_logger.info(f'Audio received: {f.name}')
-            audio_output = audio_interaction(f.name,
+            audio_output = await audio_interaction(f.name,
                                              {"configurable": {"thread_id": chat_id}},
                                              chat.context,
                                              chat.language,
@@ -129,6 +132,85 @@ def send_audio(chat_id:str,
     with NamedTemporaryFile(suffix='.mp3',
                             delete_on_close=False,
                             delete=False) as audio_file:
-        audio_file.write(b''.join(audio_output))
+        audio_file.write(audio_output)
         app_logger.info(f'Audio sent: {audio_file.name}')
         return FileResponse(audio_file.name, media_type='audio/mpeg')
+
+@app.get("/chat/v2/download/{file_name}")
+def download_audio(file_name:str):
+    f_name = os.path.join(tempfile.gettempdir(), file_name)
+    if not os.path.exists(f_name):
+        return HTTPException(status_code=404, detail=f'File not found.')
+    if not os.path.isfile(f_name):
+        return HTTPException(status_code=404, detail=f'File not found.')
+    if not os.path.isabs(f_name):
+        return HTTPException(status_code=404, detail=f'File not found.')
+    with open(f_name, 'rb') as f:
+        return FileResponse(f.name, media_type='audio/mpeg')
+
+@app.get("/chat/v2/last-text/{chat_id}")
+def get_last_message(chat_id:str):
+    if chat_id not in chats:
+        raise HTTPException(status_code=404, detail="Chat not found.")
+    chat: Chat = chats[chat_id]
+    return {'ai_message': chat.memory.messages[-1].content}
+
+def save_audios(audios):
+    audio_list = []
+    for audio_output in audios:
+        with NamedTemporaryFile(suffix='.mp3',
+                                delete_on_close=False,
+                                delete=False) as audio_file:
+            audio_file.write(audio_output)
+            app_logger.info(f'Audio available: {audio_file.name}')
+            audio_list.append(audio_file.name.split('/')[-1])
+    return audio_list
+
+@app.get("/chat/v2/mixed/{chat_id}")
+async def send_mixed(chat_id:str, message:str):
+    if not message:
+        return
+    if chat_id not in chats:
+        raise HTTPException(status_code=404, detail="Chat not found.")
+    chat: Chat = chats[chat_id]
+
+    message = BeautifulSoup(message, "html.parser").get_text()
+    audios = await mixed_interaction_v2(message,
+                                     {"configurable": {"thread_id": chat_id}},
+                                     chat.context,
+                                     chat.language,
+                                     chat.memory)
+    audio_file_list = save_audios(audios)
+    return JSONResponse(audio_file_list)
+
+
+@app.post("/chat/v2/audio/{chat_id}")
+async def send_audio(chat_id:str,
+               audio: Annotated[UploadFile,
+               File(description="filetypes: flac, m4a, mp3, mp4, mpeg, oga, ogg, wav, webm")]=None):
+    if not audio:
+        return
+
+    if chat_id not in chats:
+        raise HTTPException(status_code=404, detail="Chat not found.")
+    chat: Chat = chats[chat_id]
+
+    suffix = '.' + audio.filename.split('.')[-1]
+    try:
+        contents = audio.file.read()
+        with NamedTemporaryFile(suffix=suffix) as f:
+            f.write(contents)
+            app_logger.info(f'Audio received: {f.name}')
+            audios = await audio_interaction_v2(f.name,
+                                                {"configurable": {"thread_id": chat_id}},
+                                                chat.context,
+                                                chat.language,
+                                                chat.memory)
+    except Exception as e:
+        app_logger.error(str(e), exc_info=True)
+        raise HTTPException(status_code=500, detail=f'Something went wrong:\n{str(e)}')
+    finally:
+        audio.file.close()
+
+    audio_file_list = save_audios(audios)
+    return JSONResponse(audio_file_list)

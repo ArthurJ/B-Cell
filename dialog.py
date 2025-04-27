@@ -22,9 +22,6 @@ from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 
 from langchain_core.chat_history import InMemoryChatMessageHistory
 
-from langchain_pinecone import PineconeVectorStore
-from langchain_openai import OpenAIEmbeddings
-
 from elevenlabs.client import ElevenLabs
 from elevenlabs import play
 
