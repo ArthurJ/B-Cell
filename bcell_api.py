@@ -137,7 +137,7 @@ async def send_audio(chat_id:str,
         return FileResponse(audio_file.name, media_type='audio/mpeg')
 
 @app.get("/chat/v2/download/{file_name}")
-def download_audio(file_name:str):
+async def download_audio(file_name:str):
     f_name = os.path.join(tempfile.gettempdir(), file_name)
     if not os.path.exists(f_name):
         return HTTPException(status_code=404, detail=f'File not found.')
@@ -149,13 +149,13 @@ def download_audio(file_name:str):
         return FileResponse(f.name, media_type='audio/mpeg')
 
 @app.get("/chat/v2/last-text/{chat_id}")
-def get_last_message(chat_id:str):
+async def get_last_message(chat_id:str):
     if chat_id not in chats:
         raise HTTPException(status_code=404, detail="Chat not found.")
     chat: Chat = chats[chat_id]
     return {'ai_message': chat.memory.messages[-1].content}
 
-def save_audios(audios):
+async def save_audios(audios):
     audio_list = []
     for audio_output in audios:
         with NamedTemporaryFile(suffix='.mp3',

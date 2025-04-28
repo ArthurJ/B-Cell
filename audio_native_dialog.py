@@ -10,7 +10,7 @@ from time import time
 from dotenv import load_dotenv
 
 from agent_tools import tools
-from typing import Sequence, List, Iterator, Optional, Any
+from typing import Sequence, List, Iterator, Optional, Any, Coroutine
 from typing_extensions import Annotated, TypedDict
 
 from langchain_core.messages import HumanMessage, trim_messages, AIMessage
@@ -51,11 +51,6 @@ claims = json.load(open("knowledge/talvey-claims.json", 'r'))
 tooled_llm = llm.bind_tools(tools)
 
 elevanlabs_client = AsyncElevenLabs()
-TARGET_VOICE_IDS = [
-    os.getenv('ELEVEN_LABS_VOICE_ID_1'),
-    os.getenv('ELEVEN_LABS_VOICE_ID_2'),
-    os.getenv('ELEVEN_LABS_VOICE_ID_3'),
-]
 DEFAULT_MODEL_ID = "eleven_multilingual_sts_v2"
 DEFAULT_OUTPUT_FORMAT = "mp3_44100_128"
 
@@ -169,8 +164,12 @@ async def gather_voices(encoded_audio):
     voice_1 = convert_voice(audio_bytes, os.getenv('ELEVEN_LABS_VOICE_ID_1'))
     voice_2 = convert_voice(audio_bytes, os.getenv('ELEVEN_LABS_VOICE_ID_2'))
     voice_3 = convert_voice(audio_bytes, os.getenv('ELEVEN_LABS_VOICE_ID_3'))
+    voice_4 = convert_voice(audio_bytes, os.getenv('ELEVEN_LABS_VOICE_ID_4'))
+    voice_5 = convert_voice(audio_bytes, os.getenv('ELEVEN_LABS_VOICE_ID_5'))
+    voice_6 = convert_voice(audio_bytes, os.getenv('ELEVEN_LABS_VOICE_ID_6'))
+    voice_7 = convert_voice(audio_bytes, os.getenv('ELEVEN_LABS_VOICE_ID_7'))
 
-    return await asyncio.gather(voice_1, voice_2, voice_3)
+    return await asyncio.gather(voice_1, voice_2, voice_3, voice_4, voice_5, voice_6, voice_7)
 
 def transcribe(audio_path, lang='en'):
     with open(audio_path, 'rb') as audio_file:
@@ -223,7 +222,7 @@ async def audio_interaction(audio_path, config, context:deque,
 
 async def audio_interaction_v2(audio_path, config, context:deque,
                                lang='en', chat_history: Optional[InMemoryChatMessageHistory]=None, speak=False) \
-        -> tuple[bytes | Any, bytes | Any, bytes | Any]:
+        -> list[bytes | Any]:
 
     with open(audio_path, "rb") as f:
         audio_data = f.read()
@@ -253,7 +252,7 @@ async def audio_interaction_v2(audio_path, config, context:deque,
 
 async def mixed_interaction_v2(query, config, context, lang='en',
                       chat_history: Optional[InMemoryChatMessageHistory]=None) \
-        -> tuple[ bytes | Any, bytes | Any, bytes | Any]:
+        -> list[bytes | Any]:
     encoded_audio = (interaction(query, config, context, lang, chat_history)["messages"][-1]
                         .additional_kwargs['audio']['data'])
     return await gather_voices(encoded_audio)
