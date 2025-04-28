@@ -51,8 +51,6 @@ claims = json.load(open("knowledge/talvey-claims.json", 'r'))
 tooled_llm = llm.bind_tools(tools)
 
 elevanlabs_client = AsyncElevenLabs()
-DEFAULT_MODEL_ID = "eleven_multilingual_sts_v2"
-DEFAULT_OUTPUT_FORMAT = "mp3_44100_128"
 
 prompt = ChatPromptTemplate.from_messages(
     [
@@ -144,12 +142,12 @@ def text_interaction(query, config, context,
                 lang='en', chat_history: Optional[InMemoryChatMessageHistory]=None):
     return interaction(query, config, context, lang, chat_history)["messages"][-1].content
 
-async def convert_voice(audio_bytes, voice_id):
+async def convert_voice(audio_bytes, voice_id, out_format='pcm_48000'):
     converted = elevanlabs_client.speech_to_speech.convert(
         audio=audio_bytes,
         voice_id=voice_id,
         model_id="eleven_multilingual_sts_v2",
-        output_format="mp3_44100_128",
+        output_format=out_format,
     )
 
     converted_audio_bytes = b""
@@ -187,7 +185,7 @@ async def mixed_interaction(query, config, context, lang='en',
     encoded_audio = (interaction(query, config, context, lang, chat_history)["messages"][-1]
                         .additional_kwargs['audio']['data'])
     audio_bytes = base64.b64decode(encoded_audio)
-    return await convert_voice(audio_bytes, os.getenv('ELEVEN_LABS_VOICE_ID'))
+    return await convert_voice(audio_bytes, os.getenv('ELEVEN_LABS_VOICE_ID'), out_format='mp3_44100_128')
 
 async def audio_interaction(audio_path, config, context:deque,
                       lang='en', chat_history: Optional[InMemoryChatMessageHistory]=None, speak=False) \
@@ -215,7 +213,7 @@ async def audio_interaction(audio_path, config, context:deque,
 
     encoded_audio = last_message.additional_kwargs['audio']['data']
     audio_bytes = base64.b64decode(encoded_audio)
-    answer = await convert_voice(audio_bytes, os.getenv('ELEVEN_LABS_VOICE_ID'))
+    answer = await convert_voice(audio_bytes, os.getenv('ELEVEN_LABS_VOICE_ID'), out_format='mp3_44100_128')
     if speak:
         play(answer)
         # play(audio_bytes)
