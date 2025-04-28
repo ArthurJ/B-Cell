@@ -180,7 +180,7 @@ async def send_mixed(chat_id:str, message:str):
                                      chat.context,
                                      chat.language,
                                      chat.memory)
-    audio_file_list = save_audios(audios)
+    audio_file_list = await save_audios(audios)
     return JSONResponse(audio_file_list)
 
 
@@ -212,5 +212,5 @@ async def send_audio(chat_id:str,
     finally:
         audio.file.close()
 
-    audio_file_list = save_audios(audios)
+    audio_file_list = await save_audios(audios)
     return JSONResponse(audio_file_list)

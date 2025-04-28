@@ -161,15 +161,16 @@ async def convert_voice(audio_bytes, voice_id):
 
 async def gather_voices(encoded_audio):
     audio_bytes = base64.b64decode(encoded_audio)
-    voice_1 = convert_voice(audio_bytes, os.getenv('ELEVEN_LABS_VOICE_ID_1'))
-    voice_2 = convert_voice(audio_bytes, os.getenv('ELEVEN_LABS_VOICE_ID_2'))
-    voice_3 = convert_voice(audio_bytes, os.getenv('ELEVEN_LABS_VOICE_ID_3'))
-    voice_4 = convert_voice(audio_bytes, os.getenv('ELEVEN_LABS_VOICE_ID_4'))
-    voice_5 = convert_voice(audio_bytes, os.getenv('ELEVEN_LABS_VOICE_ID_5'))
-    voice_6 = convert_voice(audio_bytes, os.getenv('ELEVEN_LABS_VOICE_ID_6'))
-    voice_7 = convert_voice(audio_bytes, os.getenv('ELEVEN_LABS_VOICE_ID_7'))
 
-    return await asyncio.gather(voice_1, voice_2, voice_3, voice_4, voice_5, voice_6, voice_7)
+    return await asyncio.gather(
+        convert_voice(audio_bytes, os.getenv('ELEVEN_LABS_VOICE_ID_1')),
+        convert_voice(audio_bytes, os.getenv('ELEVEN_LABS_VOICE_ID_2')),
+        convert_voice(audio_bytes, os.getenv('ELEVEN_LABS_VOICE_ID_3')),
+        convert_voice(audio_bytes, os.getenv('ELEVEN_LABS_VOICE_ID_4')),
+        convert_voice(audio_bytes, os.getenv('ELEVEN_LABS_VOICE_ID_5')),
+        convert_voice(audio_bytes, os.getenv('ELEVEN_LABS_VOICE_ID_6')),
+        convert_voice(audio_bytes, os.getenv('ELEVEN_LABS_VOICE_ID_7')),
+    )
 
 def transcribe(audio_path, lang='en'):
     with open(audio_path, 'rb') as audio_file:
@@ -247,7 +248,7 @@ async def audio_interaction_v2(audio_path, config, context:deque,
     encoded_audio = last_message.additional_kwargs['audio']['data']
     voices = await gather_voices(encoded_audio)
     if speak:
-        play(voices[0])
+        play(voices[3])
     return voices
 
 async def mixed_interaction_v2(query, config, context, lang='en',
