@@ -142,7 +142,7 @@ def text_interaction(query, config, context,
                 lang='en', chat_history: Optional[InMemoryChatMessageHistory]=None):
     return interaction(query, config, context, lang, chat_history)["messages"][-1].content
 
-async def convert_voice(audio_bytes, voice_id, out_format='pcm_48000'):
+async def convert_voice(audio_bytes, voice_id, out_format='mp3_44100_192'):
     converted = elevanlabs_client.speech_to_speech.convert(
         audio=audio_bytes,
         voice_id=voice_id,

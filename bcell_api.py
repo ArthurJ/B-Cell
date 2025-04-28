@@ -158,7 +158,7 @@ async def get_last_message(chat_id:str):
 async def save_audios(audios):
     audio_list = []
     for audio_output in audios:
-        with NamedTemporaryFile(suffix='.wav',
+        with NamedTemporaryFile(suffix='.mp3',
                                 delete_on_close=False,
                                 delete=False) as audio_file:
             audio_file.write(audio_output)

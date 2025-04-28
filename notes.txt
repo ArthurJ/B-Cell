@@ -5,3 +5,4 @@ cd /root/workspace/B-Cell/ && source .venv/bin/activate.fish && nohup uvicorn bc
 logrotate -s /var/log/logstatus /root/workspace/B-Cell/logrotate.conf
 
 find /tmp/*.mp3 -type f -mmin +60 -delete
+find /tmp/*.wav -type f -mmin +60 -delete
