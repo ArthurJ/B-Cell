@@ -241,6 +241,8 @@ async def audio_interaction_v2(audio_path, config, context:deque,
 
     output = chat_app.invoke(input_dict, config)
     last_message = output["messages"][-1]
+    if not last_message.content:
+        last_message.content = last_message.additional_kwargs['audio']['transcript']
     chat_history.add_message(last_message)
 
     encoded_audio = last_message.additional_kwargs['audio']['data']
