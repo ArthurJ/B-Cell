@@ -36,8 +36,8 @@ openai_client = OpenAI()
 load_dotenv()
 
 llm = ChatOpenAI(
-    model="gpt-4o-mini-audio-preview",
-    # model="gpt-4o-audio-preview",
+    # model="gpt-4o-mini-audio-preview",
+    model="gpt-4o-audio-preview",
     temperature=0.6,
     model_kwargs={
         "modalities": ["text", "audio"],
@@ -267,11 +267,11 @@ async def async_main():
     ctx = deque(maxlen=20)
 
     configuration = {"configurable": {"thread_id": thread_id}}
-    # while True:
-    #     query_input = input('User: ')
-    #     print()
-    #     interaction(query_input, configuration, ctx, language, pprint=True)
-    await audio_interaction_v2('/home/arthur/Documents/query.mp3', configuration, ctx, language, speak=True)
+    while True:
+        query_input = input('User: ')
+        print()
+        interaction(query_input, configuration, ctx, language, pprint=True)
+    # await audio_interaction_v2('/home/arthur/Documents/query.mp3', configuration, ctx, language, speak=True)
     # await audio_interaction('/home/arthur/Documents/query.mp3', configuration, ctx, language, speak=True)
 
 if __name__ == '__main__':
