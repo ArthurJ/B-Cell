@@ -63,22 +63,23 @@ def update_chat(chat: Chat, result: AgentRunResult):
     chat.last_text = result.output.answer
     chat.sources = result.output.sources
 
-
+@app.get("/new-chat")
 @app.get("/v3/new-chat")
-async def new_chat():
+async def new_chat(lang:str='en'):
     chat_id = token_hex()
     deps = DialogContext(talvey_claims=claims)
     first_run = await initial_run(deps)
     chat = Chat(thread_id=chat_id,
                 history=first_run.all_messages(),
                 deps=deps,
-                last_text=first_run.last_text,
+                last_text=first_run.output.answer,
                 sources=None)
     chats[chat_id] = chat
     logfire.info(f'Chat created: {chat_id}')
-    return {"chat_id": chat_id, 'message':first_run.output.answer, 'sources':[]}
+    return {"chat_id": chat_id, 'ai_message':first_run.output.answer, 'sources':[]}
 
 
+@app.get("/chat/text/{chat_id}")
 @app.get("/v3/chat/text/{chat_id}")
 async def send_text(chat_id:str, message:str):
     if not message:
@@ -90,9 +91,10 @@ async def send_text(chat_id:str, message:str):
     result = (await interaction(message, chat.deps, chat.history))
     update_chat(chat, result)
 
-    return {'message': result.output.answer, 'sources': result.output.sources}
+    return {'ai_message': result.output.answer, 'sources': result.output.sources}
 
 
+@app.get("/chat/mixed/{chat_id}")
 @app.get("/v3/chat/mixed/{chat_id}")
 async def send_mixed(chat_id:str, message:str):
     if not message:
@@ -105,12 +107,12 @@ async def send_mixed(chat_id:str, message:str):
     result = (await interaction(message, chat.deps, chat.history))
     update_chat(chat, result)
 
-    source_audio = await tts(result.output)
+    source_audio = await tts(result.output.answer)
 
     audio_file_list = await save_audios(source_audio)
     return JSONResponse(audio_file_list)
 
-
+@app.post("/chat/audio/{chat_id}")
 @app.post("/v3/chat/audio/{chat_id}")
 async def send_audio(chat_id:str,
                      audio: Annotated[UploadFile,
@@ -137,12 +139,12 @@ async def send_audio(chat_id:str,
     result = (await interaction(transcription, chat.deps, chat.history))
     update_chat(chat, result)
 
-    source_audio = await tts(result.output)
+    source_audio = await tts(result.output.answer)
 
     audio_file_list = await save_audios(source_audio)
     return JSONResponse(audio_file_list)
 
-
+@app.get("/chat/v2/download/{file_name}")
 @app.get("/v3/chat/download/{file_name}")
 async def download_audio(file_name:str):
     f_name = os.path.join(tempfile.gettempdir(), file_name)
@@ -156,9 +158,10 @@ async def download_audio(file_name:str):
         return FileResponse(f.name, media_type='audio/mpeg')
 
 
+@app.get("/chat/last-text/{chat_id}")
 @app.get("/v3/chat/last-text/{chat_id}")
 async def get_last_message(chat_id:str):
     if chat_id not in chats:
         raise HTTPException(status_code=404, detail="Chat not found.")
     chat: Chat = chats[chat_id]
-    return {'message': chat.last_text, 'sources': chat.sources}
+    return {'ai_message': chat.last_text, 'sources': chat.sources}
