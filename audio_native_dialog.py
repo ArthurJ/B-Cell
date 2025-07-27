@@ -9,7 +9,8 @@ from time import time
 
 from dotenv import load_dotenv
 
-from agent_tools import tools
+from langchain_core.tools import Tool
+from agent_tools import knowledge_retrieve
 from typing import Sequence, List, Iterator, Optional, Any, Coroutine
 from typing_extensions import Annotated, TypedDict
 
@@ -48,9 +49,16 @@ llm = ChatOpenAI(
 dialog_logger = logging.getLogger(__name__)
 claims = json.load(open("knowledge/talvey-claims.json", 'r'))
 
+tools = [
+    Tool(
+        name="knowledge_retrieve",
+        func=knowledge_retrieve,
+        description="Retrieve knowledge from scientific papers based on the query")
+]
+
 tooled_llm = llm.bind_tools(tools)
 
-elevanlabs_client = AsyncElevenLabs()
+elevenlabs_client = AsyncElevenLabs()
 
 prompt = ChatPromptTemplate.from_messages(
     [
@@ -143,7 +151,7 @@ def text_interaction(query, config, context,
     return interaction(query, config, context, lang, chat_history)["messages"][-1].content
 
 async def convert_voice(audio_bytes, voice_id, out_format='mp3_44100_192'):
-    converted = elevanlabs_client.speech_to_speech.convert(
+    converted = elevenlabs_client.speech_to_speech.convert(
         audio=audio_bytes,
         voice_id=voice_id,
         model_id="eleven_multilingual_sts_v2",
@@ -267,11 +275,11 @@ async def async_main():
     ctx = deque(maxlen=20)
 
     configuration = {"configurable": {"thread_id": thread_id}}
-    while True:
-        query_input = input('User: ')
-        print()
-        interaction(query_input, configuration, ctx, language, pprint=True)
-    # await audio_interaction_v2('/home/arthur/Documents/query.mp3', configuration, ctx, language, speak=True)
+    # while True:
+    #     query_input = input('User: ')
+    #     print()
+    #     interaction(query_input, configuration, ctx, language, pprint=True)
+    await audio_interaction_v2('/home/arthur/Documents/query.mp3', configuration, ctx, language, speak=True)
     # await audio_interaction('/home/arthur/Documents/query.mp3', configuration, ctx, language, speak=True)
 
 if __name__ == '__main__':
