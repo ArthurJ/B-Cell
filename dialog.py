@@ -58,8 +58,17 @@ def prune_thoughts(history: List[ModelMessage]) -> List[ModelMessage]:
         ]
     return history
 
-transcriber = Agent(
+text_transcriber = Agent(
     model='openai:gpt-4o-mini',
+    retries=3,
+    instrument=True,
+    output_type=TranscriberOutputType,
+    instructions='You are an excellent Captioner, Transcriptionist and Translator. '
+                 'Transcribe, translating to english if necessary:'
+)
+
+audio_transcriber = Agent(
+    model='openai:gpt-4o-mini-audio-preview',
     retries=3,
     instrument=True,
     output_type=TranscriberOutputType,
@@ -94,14 +103,14 @@ def add_claims(ctx: RunContext[DialogContext]) -> str:
 
 async def interaction(query: str, dependencies: DialogContext, chat_history):
     result = await bcell.run(
-        (await transcriber.run(query)).output.translation,
+        (await text_transcriber.run(query)).output.translation,
         message_history=chat_history,
         deps=dependencies,
     )
     return result
 
 async def transcribe(audio: bytes, audio_type='audio/mp3') -> str:
-    transcription = (await transcriber.run([BinaryContent(audio, media_type=audio_type)])).output
+    transcription = (await audio_transcriber.run([BinaryContent(audio, media_type=audio_type)])).output
     return transcription
 
 
@@ -122,17 +131,17 @@ async def tts_google(text:str) -> bytes:
 
 async def tts(text:str) -> bytes:
     completion = openai_client.chat.completions.create(
-        model="gpt-4o-mini-tts",
+        model="gpt-4o-mini-audio-preview",
         modalities=["text", "audio"],
         audio={"voice": "alloy", "format": "pcm16"},
         messages=[
             {
                 "role": "system",
-                "content": 'You are helpful and collaborative. Your voice is ethereal and wise. Say:'
+                "content": 'You are helpful and collaborative. Your voice is ethereal and wise.'
             },
             {
                 "role": "user",
-                "content": text
+                "content": f'Say: {text}'
             }
         ]
     )
