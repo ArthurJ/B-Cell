@@ -57,13 +57,13 @@ transcriber = Agent(
 )
 
 bcell = Agent(
-    # model='google-gla:gemini-2.5-flash',
-    model='google-gla:gemini-2.5-pro',
+    model='google-gla:gemini-2.5-flash',
+    # model='google-gla:gemini-2.5-pro',
     system_prompt=open('system_prompt.md', 'r').read(),
     deps_type=DialogContext,
     tools=tools,
     output_type=OutputType,
-    model_settings=GoogleModelSettings(google_thinking_config={'include_thoughts': True, 'thinking_budget': 200}),
+    model_settings=GoogleModelSettings(google_thinking_config={'include_thoughts': True, 'thinking_budget': -1}),
     history_processors=[prune_thoughts, prune_tools],
     retries=3,
     instrument=True,
