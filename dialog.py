@@ -58,17 +58,8 @@ def prune_thoughts(history: List[ModelMessage]) -> List[ModelMessage]:
         ]
     return history
 
-text_transcriber = Agent(
-    model='openai:gpt-4o-mini',
-    retries=3,
-    instrument=True,
-    output_type=TranscriberOutputType,
-    instructions='You are an excellent Captioner, Transcriptionist and Translator. '
-                 'Transcribe, translating to english if necessary:'
-)
-
-audio_transcriber = Agent(
-    model='openai:gpt-4o-mini-audio-preview',
+transcriber = Agent(
+    model='google-gla:gemini-2.5-flash',
     retries=3,
     instrument=True,
     output_type=TranscriberOutputType,
@@ -103,14 +94,14 @@ def add_claims(ctx: RunContext[DialogContext]) -> str:
 
 async def interaction(query: str, dependencies: DialogContext, chat_history):
     result = await bcell.run(
-        (await text_transcriber.run(query)).output.translation,
+        (await transcriber.run(query)).output.translation,
         message_history=chat_history,
         deps=dependencies,
     )
     return result
 
 async def transcribe(audio: bytes, audio_type='audio/mp3') -> str:
-    transcription = (await audio_transcriber.run([BinaryContent(audio, media_type=audio_type)])).output
+    transcription = (await transcriber.run([BinaryContent(audio, media_type=audio_type)])).output.translation
     return transcription
 
 
