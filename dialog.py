@@ -10,11 +10,14 @@ from pydantic import Field
 from pydantic_ai import Agent, RunContext, BinaryContent
 from pydantic_ai.messages import ThinkingPart, ModelMessage, ToolCallPart, ToolReturnPart
 
-#import simpleaudio as sa
+import simpleaudio as sa
 
 from google import genai
 from google.genai import types
 from pydantic_ai.models.google import GoogleModelSettings
+
+import base64
+from openai import OpenAI
 
 from agent_tools import tools
 from voice import gather_voices, pcm_2_wav
@@ -24,6 +27,7 @@ logfire.instrument_openai()
 
 load_dotenv()
 client = genai.Client()
+openai_client = OpenAI()
 
 @dataclass
 class DialogContext:
@@ -106,7 +110,7 @@ async def transcribe(audio: bytes, audio_type='audio/mp3') -> str:
     return transcription
 
 
-async def tts(text:str) -> bytes:
+async def tts_google(text:str) -> bytes:
     response = client.models.generate_content(
         model="gemini-2.5-flash-preview-tts",
         contents='Say: '+text,
@@ -121,9 +125,30 @@ async def tts(text:str) -> bytes:
     pcm_data = response.candidates[0].content.parts[0].inline_data.data
     return pcm_data
 
+async def tts(text:str) -> bytes:
+    completion = openai_client.chat.completions.create(
+        model="gpt-4o-mini-audio-preview",
+        modalities=["text", "audio"],
+        audio={"voice": "alloy", "format": "pcm16"},
+        messages=[
+            {
+                "role": "system",
+                "content": 'Say in a helpful and collaborative way:'
+            },
+            {
+                "role": "user",
+                "content": text
+            }
+        ]
+    )
+
+    print(completion.choices[0])
+
+    return  base64.b64decode(completion.choices[0].message.audio.data)
+
 async def chorus(pcm_audio:bytes, qtd_voices=1, play=False, convert=True) -> List[bytes]:
     wav_data = pcm_2_wav(pcm_audio)
-    #if play:
+    # if play:
     #    data = await gather_voices(wav_data, 'pcm_44100', 1)
     #    sa.play_buffer(data[0],1, sample_rate=44100, bytes_per_sample=2)
     if convert:
