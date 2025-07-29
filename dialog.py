@@ -10,11 +10,10 @@ from pydantic import Field
 from pydantic_ai import Agent, RunContext, BinaryContent
 from pydantic_ai.messages import ThinkingPart, ModelMessage, ToolCallPart, ToolReturnPart
 
-import simpleaudio as sa
+# import simpleaudio as sa
 
 from google import genai
 from google.genai import types
-from pydantic_ai.models.google import GoogleModelSettings
 
 import base64
 from openai import OpenAI
@@ -26,7 +25,7 @@ logfire.configure(service_name="dialog", scrubbing=False)
 logfire.instrument_openai()
 
 load_dotenv()
-client = genai.Client()
+ggenai_client = genai.Client()
 openai_client = OpenAI()
 
 @dataclass
@@ -60,7 +59,7 @@ def prune_thoughts(history: List[ModelMessage]) -> List[ModelMessage]:
     return history
 
 transcriber = Agent(
-    model='google-gla:gemini-2.5-flash',
+    model='openai:gpt-4o-mini',
     retries=3,
     instrument=True,
     output_type=TranscriberOutputType,
@@ -69,14 +68,11 @@ transcriber = Agent(
 )
 
 bcell = Agent(
-    # model='google-gla:gemini-2.5-flash',
-    # model='google-gla:gemini-2.5-pro',
     model='openai:gpt-4o',
     system_prompt=open('system_prompt.md', 'r').read(),
     deps_type=DialogContext,
     tools=tools,
     output_type=MainAgentOutputType,
-    # model_settings=GoogleModelSettings(google_thinking_config={'include_thoughts': True, 'thinking_budget': 2000}),
     history_processors=[prune_thoughts, prune_tools],
     retries=3,
     instrument=True,
@@ -106,12 +102,11 @@ async def interaction(query: str, dependencies: DialogContext, chat_history):
 
 async def transcribe(audio: bytes, audio_type='audio/mp3') -> str:
     transcription = (await transcriber.run([BinaryContent(audio, media_type=audio_type)])).output
-    # print(transcription)
     return transcription
 
 
 async def tts_google(text:str) -> bytes:
-    response = client.models.generate_content(
+    response = ggenai_client.models.generate_content(
         model="gemini-2.5-flash-preview-tts",
         contents='Say: '+text,
         config=types.GenerateContentConfig(
@@ -133,7 +128,7 @@ async def tts(text:str) -> bytes:
         messages=[
             {
                 "role": "system",
-                "content": 'Say in a helpful and collaborative way:'
+                "content": 'Say in a helpful and collaborative way, without changing the script:'
             },
             {
                 "role": "user",
@@ -158,7 +153,7 @@ async def chorus(pcm_audio:bytes, qtd_voices=1, play=False, convert=True) -> Lis
 
 async def initial_run(deps: DialogContext):
     return await bcell.run("Introduce yourself.", deps=deps,
-                           model='google-gla:gemini-2.5-flash')
+                           model='openai:gpt-4o-mini')
 
 def tts_sync(text:str) -> bytes:
     loop = asyncio.get_event_loop()
