@@ -122,13 +122,13 @@ async def tts_google(text:str) -> bytes:
 
 async def tts(text:str) -> bytes:
     completion = openai_client.chat.completions.create(
-        model="gpt-4o-mini-audio-preview",
+        model="gpt-4o-mini-tts",
         modalities=["text", "audio"],
         audio={"voice": "alloy", "format": "pcm16"},
         messages=[
             {
                 "role": "system",
-                "content": 'Say in a helpful and collaborative way, without changing the script:'
+                "content": 'You are helpful and collaborative. Your voice is ethereal and wise. Say:'
             },
             {
                 "role": "user",
