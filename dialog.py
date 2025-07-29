@@ -136,9 +136,6 @@ async def tts(text:str) -> bytes:
             }
         ]
     )
-
-    print(completion.choices[0])
-
     return  base64.b64decode(completion.choices[0].message.audio.data)
 
 async def chorus(pcm_audio:bytes, qtd_voices=1, play=False, convert=True) -> List[bytes]:
