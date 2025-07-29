@@ -20,7 +20,7 @@ from agent_tools import tools
 from voice import gather_voices, pcm_2_wav
 
 logfire.configure(service_name="dialog", scrubbing=False)
-logfire.instrument_system_metrics()
+logfire.instrument_openai()
 
 load_dotenv()
 client = genai.Client()
@@ -54,7 +54,8 @@ transcriber = Agent(
     model='google-gla:gemini-2.5-flash',
     retries=3,
     instrument=True,
-    instructions='You are a polyglot and excellent Captioner and Transcriptionist.'
+    instructions='You are an excellent Captioner, Transcriptionist and Translator. '
+                 'Transcribe, translating to english if necessary:'
 )
 
 bcell = Agent(
@@ -102,7 +103,7 @@ async def transcribe(audio: bytes, audio_type='audio/mp3') -> str:
 async def tts(text:str) -> bytes:
     response = client.models.generate_content(
         model="gemini-2.5-flash-preview-tts",
-        contents='Say in a wise and calm way, but not slowly:'+text,
+        contents='Say in a neutral way: '+text,
         config=types.GenerateContentConfig(
             response_modalities=["AUDIO"],
             speech_config=types.SpeechConfig(

@@ -31,6 +31,7 @@ app.add_middleware(
 
 logfire.configure(service_name="API_v3", scrubbing=False)
 logfire.instrument_fastapi(app)
+logfire.instrument_system_metrics()
 
 
 class Chat(BaseModel):
@@ -166,4 +167,5 @@ async def get_last_message(chat_id:str):
     if chat_id not in chats:
         raise HTTPException(status_code=404, detail="Chat not found.")
     chat: Chat = chats[chat_id]
+    logfire.info(f'Sources used: {chat.sources}')
     return {'ai_message': chat.last_text, 'sources': chat.sources}
