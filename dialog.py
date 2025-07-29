@@ -30,9 +30,14 @@ class DialogContext:
     talvey_claims: str
 
 @dataclass
-class OutputType:
+class MainAgentOutputType:
     answer: str
     sources: List[str] = Field(validation_alias='metadata.source')
+
+@dataclass
+class TranscriberOutputType:
+    transcription: str
+    translation: str
 
 def prune_tools(history: List[ModelMessage]) -> List[ModelMessage]:
     for message in history[:-10]:
@@ -54,6 +59,7 @@ transcriber = Agent(
     model='google-gla:gemini-2.5-flash',
     retries=3,
     instrument=True,
+    output_type=TranscriberOutputType,
     instructions='You are an excellent Captioner, Transcriptionist and Translator. '
                  'Transcribe, translating to english if necessary:'
 )
@@ -65,7 +71,7 @@ bcell = Agent(
     system_prompt=open('system_prompt.md', 'r').read(),
     deps_type=DialogContext,
     tools=tools,
-    output_type=OutputType,
+    output_type=MainAgentOutputType,
     # model_settings=GoogleModelSettings(google_thinking_config={'include_thoughts': True, 'thinking_budget': 2000}),
     history_processors=[prune_thoughts, prune_tools],
     retries=3,
@@ -88,7 +94,7 @@ def add_claims(ctx: RunContext[DialogContext]) -> str:
 
 async def interaction(query: str, dependencies: DialogContext, chat_history):
     result = await bcell.run(
-        (await transcriber.run(query)).output,
+        (await transcriber.run(query)).output.translation,
         message_history=chat_history,
         deps=dependencies,
     )
@@ -103,7 +109,7 @@ async def transcribe(audio: bytes, audio_type='audio/mp3') -> str:
 async def tts(text:str) -> bytes:
     response = client.models.generate_content(
         model="gemini-2.5-flash-preview-tts",
-        contents='Say in a neutral way: '+text,
+        contents='Say: '+text,
         config=types.GenerateContentConfig(
             response_modalities=["AUDIO"],
             speech_config=types.SpeechConfig(
