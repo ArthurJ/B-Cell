@@ -2,7 +2,7 @@ import asyncio
 import io
 import os
 import wave
-from random import choices
+from random import sample
 from typing import Tuple
 
 from elevenlabs.client import AsyncElevenLabs
@@ -31,7 +31,7 @@ async def gather_voices(audio_bytes, out_format='mp3_44100_192', qtd_voices=3):
                  'ELEVEN_LABS_VOICE_ID_3', 'ELEVEN_LABS_VOICE_ID_4',
                  'ELEVEN_LABS_VOICE_ID_5', 'ELEVEN_LABS_VOICE_ID_6',
                  'ELEVEN_LABS_VOICE_ID_7']
-    ids = choices(voice_ids, k=qtd_voices)
+    ids = sample(voice_ids, k=qtd_voices)
 
     return await asyncio.gather(
         *(convert_voice(audio_bytes, os.getenv(i), out_format) for i in ids)

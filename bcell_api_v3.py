@@ -75,7 +75,7 @@ async def new_chat(lang:str='en'):
                 last_text=first_run.output.answer,
                 sources=None)
     chats[chat_id] = chat
-    logfire.info(f'Chat created: {chat_id}')
+    logfire.info(f'Chat created: {chat_id} handled by worker PID: {os.getpid()}')
     return {"chat_id": chat_id, 'ai_message':first_run.output.answer, 'sources':[]}
 
 
@@ -148,6 +148,8 @@ async def send_audio(chat_id:str,
 @app.get("/v3/chat/download/{file_name}")
 async def download_audio(file_name:str):
     f_name = os.path.join(tempfile.gettempdir(), file_name)
+    if os.path.basename(file_name) != file_name:
+        raise HTTPException(status_code=400, detail="Invalid file name.")
     if not os.path.exists(f_name):
         return HTTPException(status_code=404, detail=f'File not found.')
     if not os.path.isfile(f_name):

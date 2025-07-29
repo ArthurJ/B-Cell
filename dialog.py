@@ -13,6 +13,7 @@ import simpleaudio as sa
 
 from google import genai
 from google.genai import types
+from pydantic_ai.models.google import GoogleModelSettings
 
 from agent_tools import tools
 from voice import gather_voices, pcm_2_wav
@@ -62,8 +63,8 @@ bcell = Agent(
     deps_type=DialogContext,
     tools=tools,
     output_type=OutputType,
-    # model_settings=GoogleModelSettings(google_thinking_config={'include_thoughts': True}),
-    # history_processors=[prune_thoughts, prune_tools],
+    model_settings=GoogleModelSettings(google_thinking_config={'include_thoughts': True, 'thinking_budget': 200}),
+    history_processors=[prune_thoughts, prune_tools],
     retries=3,
     instrument=True,
     instructions="""
@@ -98,8 +99,8 @@ async def transcribe(audio: bytes, audio_type='audio/mp3') -> str:
 
 async def tts(text:str) -> bytes:
     response = client.models.generate_content(
-        model="gemini-2.5-pro-preview-tts",
-        contents='Say in a wise and calm way:'+text,
+        model="gemini-2.5-flash-preview-tts",
+        contents='Say in a wise and calm way, but not slowly:'+text,
         config=types.GenerateContentConfig(
             response_modalities=["AUDIO"],
             speech_config=types.SpeechConfig(
