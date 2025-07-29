@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 from pydantic_ai import Agent, RunContext, BinaryContent
 from pydantic_ai.messages import ThinkingPart, ModelMessage, ToolCallPart, ToolReturnPart
 
-import simpleaudio as sa
+#import simpleaudio as sa
 
 from google import genai
 from google.genai import types
@@ -53,7 +53,7 @@ transcriber = Agent(
     model='google-gla:gemini-2.5-flash',
     retries=3,
     instrument=True,
-    instructions='You are an excellent, polyglot, Captioner and Transcriptionist.'
+    instructions='You are a polyglot and excellent Captioner and Transcriptionist.'
 )
 
 bcell = Agent(
@@ -114,9 +114,9 @@ async def tts(text:str) -> bytes:
 
 async def chorus(pcm_audio:bytes, qtd_voices=1, play=False, convert=True) -> List[bytes]:
     wav_data = pcm_2_wav(pcm_audio)
-    if play:
-        data = await gather_voices(wav_data, 'pcm_44100', 1)
-        sa.play_buffer(data[0],1, sample_rate=44100, bytes_per_sample=2)
+    #if play:
+    #    data = await gather_voices(wav_data, 'pcm_44100', 1)
+    #    sa.play_buffer(data[0],1, sample_rate=44100, bytes_per_sample=2)
     if convert:
         data = await gather_voices(wav_data, qtd_voices=qtd_voices)
         return data
