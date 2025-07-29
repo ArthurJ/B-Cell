@@ -38,7 +38,7 @@ class Chat(BaseModel):
     history: List
     deps: DialogContext
     last_text: str
-    sources: Optional[str]
+    sources: Optional[List[str]]
 
 claims = json.load(open("knowledge/talvey-claims.json", 'r'))
 chats = dict()
@@ -61,7 +61,7 @@ async def save_audios(source_audio, qtd_voices=3):
 def update_chat(chat: Chat, result: AgentRunResult):
     chat.history = result.all_messages()
     chat.last_text = result.output.answer
-    chat.sources = result.output.sources
+    chat.sources = [''.join(s[-1::-1].split('.')[1:])[-1::-1].split('/')[-1] for s in result.output.sources]
 
 @app.get("/new-chat")
 @app.get("/v3/new-chat")

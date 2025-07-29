@@ -6,6 +6,7 @@ from typing import List
 
 import logfire
 from dotenv import load_dotenv
+from pydantic import Field
 from pydantic_ai import Agent, RunContext, BinaryContent
 from pydantic_ai.messages import ThinkingPart, ModelMessage, ToolCallPart, ToolReturnPart
 
@@ -31,7 +32,7 @@ class DialogContext:
 @dataclass
 class OutputType:
     answer: str
-    sources: List[str]
+    sources: List[str] = Field(validation_alias='metadata.source')
 
 def prune_tools(history: List[ModelMessage]) -> List[ModelMessage]:
     for message in history[:-10]:
@@ -57,13 +58,14 @@ transcriber = Agent(
 )
 
 bcell = Agent(
-    model='google-gla:gemini-2.5-flash',
+    # model='google-gla:gemini-2.5-flash',
     # model='google-gla:gemini-2.5-pro',
+    model='openai:gpt-4o',
     system_prompt=open('system_prompt.md', 'r').read(),
     deps_type=DialogContext,
     tools=tools,
     output_type=OutputType,
-    model_settings=GoogleModelSettings(google_thinking_config={'include_thoughts': True, 'thinking_budget': -1}),
+    # model_settings=GoogleModelSettings(google_thinking_config={'include_thoughts': True, 'thinking_budget': 2000}),
     history_processors=[prune_thoughts, prune_tools],
     retries=3,
     instrument=True,
@@ -160,5 +162,5 @@ if __name__ == '__main__':
         print(result.output.answer)
         loop.run_until_complete(chorus(tts_sync(result.output.answer), play=False, convert=False))
         sources = result.output.sources
-        sources = [s.split('/')[-1] for s in sources]
+        sources = [''.join(s[-1::-1].split('.')[1:])[-1::-1].split('/')[-1] for s in sources]
         print(sources)
