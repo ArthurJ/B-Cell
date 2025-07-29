@@ -88,7 +88,7 @@ def add_claims(ctx: RunContext[DialogContext]) -> str:
 
 async def interaction(query: str, dependencies: DialogContext, chat_history):
     result = await bcell.run(
-        query,
+        (await transcriber.run(query)).output,
         message_history=chat_history,
         deps=dependencies,
     )
