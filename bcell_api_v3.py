@@ -1,8 +1,7 @@
-import asyncio
 import json
 import os
 from itertools import islice, cycle
-from typing import List, Annotated, Optional, AsyncGenerator
+from typing import List, Annotated, Optional
 
 import logfire
 import tempfile
@@ -18,7 +17,6 @@ from pydantic import BaseModel
 from pydantic_ai.agent import AgentRunResult
 
 from dialog import interaction, tts, transcribe, initial_run, DialogContext, chorus
-from voice import gather_voices_mixed_stream
 
 app = FastAPI(title='B-Cell API V3')
 app.add_middleware(
@@ -46,12 +44,6 @@ class Chat(BaseModel):
 claims = json.load(open("knowledge/talvey-claims.json", 'r'))
 chats = dict()
 
-async def save_stream_to_file(stream: AsyncGenerator[bytes, None]) -> str:
-    async with NamedTemporaryFile(suffix='.mp3', delete=False) as audio_file:
-        async for chunk in stream:
-            await audio_file.write(chunk)
-        logfire.info(f'Audio stream saved to: {audio_file.name}')
-        return audio_file.name.split('/')[-1]
 
 async def save_audios(source_audio, qtd_voices=3):
     voices = await chorus(source_audio, qtd_voices=qtd_voices)
@@ -113,17 +105,12 @@ async def send_mixed(chat_id: str, message: str):
     chat: Chat = chats[chat_id]
 
     message = BeautifulSoup(message, "html.parser").get_text()
-    result = await interaction(message, chat.deps, chat.history)
+    result = (await interaction(message, chat.deps, chat.history))
     update_chat(chat, result)
 
-    ai_response_text = result.output.answer
+    source_audio = await tts(result.output.answer)
 
-    elevenlabs_streams = await gather_voices_mixed_stream(ai_response_text, qtd_voices=3)
-
-    audio_file_list = await asyncio.gather(
-        *(save_stream_to_file(stream) for stream in elevenlabs_streams)
-    )
-
+    audio_file_list = await save_audios(source_audio)
     return JSONResponse(audio_file_list)
 
 @app.post("/chat/audio/{chat_id}")
@@ -153,11 +140,9 @@ async def send_audio(chat_id:str,
     result = (await interaction(transcription, chat.deps, chat.history))
     update_chat(chat, result)
 
-    ai_response_text = result.output.answer
-    elevenlabs_streams = await gather_voices_mixed_stream(ai_response_text, qtd_voices=3)
-    audio_file_list = await asyncio.gather(
-        *(save_stream_to_file(stream) for stream in elevenlabs_streams)
-    )
+    source_audio = await tts(result.output.answer)
+
+    audio_file_list = await save_audios(source_audio)
     return JSONResponse(audio_file_list)
 
 @app.get("/chat/v2/download/{file_name}")

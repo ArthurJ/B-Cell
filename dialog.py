@@ -68,6 +68,7 @@ transcriber = Agent(
 )
 
 bcell = Agent(
+    # model='google-gla:gemini-2.5-pro',
     model='openai:gpt-4o',
     system_prompt=open('system_prompt.md', 'r').read(),
     deps_type=DialogContext,
@@ -105,10 +106,11 @@ async def transcribe(audio: bytes, audio_type='audio/mp3') -> str:
     return transcription
 
 
-async def tts_google(text:str) -> bytes:
+async def tts(text:str) -> bytes:
     response = ggenai_client.models.generate_content(
         model="gemini-2.5-flash-preview-tts",
-        contents='Say: '+text,
+        contents=('You are helpful and collaborative. Your voice is ethereal and wise.'
+                  + text),
         config=types.GenerateContentConfig(
             response_modalities=["AUDIO"],
             speech_config=types.SpeechConfig(
@@ -120,18 +122,7 @@ async def tts_google(text:str) -> bytes:
     pcm_data = response.candidates[0].content.parts[0].inline_data.data
     return pcm_data
 
-async def tts_stream(text: str):
-    response = await openai_client.audio.speech.with_streaming_response.create(
-        model="tts-1",  # Ou "tts-1-hd"
-        voice="alloy",
-        response_format="pcm",
-        input=text
-    )
-
-    async for chunk in response.iter_bytes(chunk_size=4096):
-        yield chunk
-
-async def tts(text:str) -> bytes:
+async def tts_openai(text:str) -> bytes:
     completion = openai_client.chat.completions.create(
         model="gpt-4o-mini-audio-preview",
         modalities=["text", "audio"],
