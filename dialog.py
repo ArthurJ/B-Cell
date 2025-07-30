@@ -8,12 +8,8 @@ import logfire
 from dotenv import load_dotenv
 from pydantic import Field
 from pydantic_ai import Agent, RunContext, BinaryContent
-from pydantic_ai.messages import ThinkingPart, ModelMessage, ToolCallPart, ToolReturnPart
 
 # import simpleaudio as sa
-
-from google import genai
-from google.genai import types
 
 import base64
 from openai import OpenAI
@@ -25,7 +21,6 @@ logfire.configure(service_name="dialog", scrubbing=False)
 logfire.instrument_openai()
 
 load_dotenv()
-ggenai_client = genai.Client()
 openai_client = OpenAI()
 
 @dataclass
@@ -39,8 +34,9 @@ class MainAgentOutputType:
 
 @dataclass
 class TranscriberOutputType:
-    transcription: str
-    translation: str
+    original_transcription: str
+    language: str
+    english_transcription: str
 
 transcriber = Agent(
     model='google-gla:gemini-2.5-flash',
@@ -48,7 +44,8 @@ transcriber = Agent(
     instrument=True,
     output_type=TranscriberOutputType,
     instructions='You are an excellent Captioner, Transcriptionist and Translator. '
-                 'Transcribe, translating to english if necessary:'
+                 'Transcribe, translating to english if necessary.'
+                 'Your only jobs is to transcribe and translate, nothing else.'
 )
 
 bcell = Agent(
@@ -78,34 +75,17 @@ def add_claims(ctx: RunContext[DialogContext]) -> str:
 
 async def interaction(query: str, dependencies: DialogContext, chat_history):
     result = await bcell.run(
-        (await transcriber.run(query)).output.translation,
+        (await transcriber.run(query)).output.english_transcription,
         message_history=chat_history,
         deps=dependencies,
     )
     return result
 
 async def transcribe(audio: bytes, audio_type='audio/mp3') -> str:
-    transcription = (await transcriber.run([BinaryContent(audio, media_type=audio_type)])).output.translation
-    return transcription
+    return (await transcriber.run([BinaryContent(audio, media_type=audio_type)])).output.english_transcription
 
 
 async def tts(text:str) -> bytes:
-    response = ggenai_client.models.generate_content(
-        model="gemini-2.5-flash-preview-tts",
-        contents=('You are helpful and collaborative. Your voice is ethereal and wise.'
-                  + text),
-        config=types.GenerateContentConfig(
-            response_modalities=["AUDIO"],
-            speech_config=types.SpeechConfig(
-                voice_config=types.VoiceConfig(
-                    prebuilt_voice_config=types.PrebuiltVoiceConfig(
-                        voice_name='Kore',
-                    ))),
-        ))
-    pcm_data = response.candidates[0].content.parts[0].inline_data.data
-    return pcm_data
-
-async def tts_openai(text:str) -> bytes:
     completion = openai_client.chat.completions.create(
         model="gpt-4o-mini-audio-preview",
         modalities=["text", "audio"],
