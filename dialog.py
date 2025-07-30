@@ -42,22 +42,6 @@ class TranscriberOutputType:
     transcription: str
     translation: str
 
-def prune_tools(history: List[ModelMessage]) -> List[ModelMessage]:
-    for message in history[:-10]:
-        message.parts = [
-            part for part in message.parts if not (isinstance(part, ToolCallPart) or isinstance(part, ToolReturnPart))
-        ]
-        if len(message.parts) == 0:
-            history.remove(message)
-    return history
-
-def prune_thoughts(history: List[ModelMessage]) -> List[ModelMessage]:
-    for message in history:
-        message.parts = [
-            part for part in message.parts if not isinstance(part, ThinkingPart)
-        ]
-    return history
-
 transcriber = Agent(
     model='google-gla:gemini-2.5-flash',
     retries=3,
@@ -74,7 +58,6 @@ bcell = Agent(
     deps_type=DialogContext,
     tools=tools,
     output_type=MainAgentOutputType,
-    history_processors=[prune_thoughts, prune_tools],
     retries=3,
     instrument=True,
     instructions="""
