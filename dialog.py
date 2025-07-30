@@ -43,7 +43,8 @@ transcriber = Agent(
     retries=3,
     instrument=True,
     output_type=TranscriberOutputType,
-    instructions='You are an excellent Captioner, Transcriptionist and Translator. '
+    instructions='You are an excellent Captioner, Transcriptionist and Translator.'
+                 "Some of the queries you'll receive are questions, treat it as any other sentence:"
                  'Transcribe, translating to english if necessary.'
                  'Your only jobs is to transcribe and translate, nothing else.'
 )
