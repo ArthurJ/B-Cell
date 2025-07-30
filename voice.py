@@ -7,8 +7,6 @@ from typing import Tuple, AsyncGenerator
 
 from elevenlabs.client import AsyncElevenLabs
 
-from dialog import tts_stream
-
 elevenlabs_client = AsyncElevenLabs(api_key=os.getenv('ELEVENLABS_API_KEY'))
 
 
@@ -46,6 +44,7 @@ async def gather_voices_mixed_stream(source_text: str, out_format='mp3_44100_192
     ids_to_use = sample(voice_ids, k=qtd_voices)
 
     async def create_full_stream(voice_id):
+        from dialog import tts_stream
         openai_audio_stream = await tts_stream(source_text)  # Cria um novo stream da OpenAI
         return await convert_voice_stream(openai_audio_stream, os.getenv(voice_id), out_format)
 

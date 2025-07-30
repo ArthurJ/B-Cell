@@ -121,10 +121,10 @@ async def tts_google(text:str) -> bytes:
     return pcm_data
 
 async def tts_stream(text: str):
-    response = await openai_client.audio.speech.create(
+    response = await openai_client.audio.speech.with_streaming_response.create(
         model="tts-1",  # Ou "tts-1-hd"
         voice="alloy",
-        response_format="pcm_16000",
+        response_format="pcm",
         input=text
     )
 
