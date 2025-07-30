@@ -1,7 +1,8 @@
+import asyncio
 import json
 import os
 from itertools import islice, cycle
-from typing import List, Annotated, Optional
+from typing import List, Annotated, Optional, AsyncGenerator
 
 import logfire
 import tempfile
@@ -17,6 +18,7 @@ from pydantic import BaseModel
 from pydantic_ai.agent import AgentRunResult
 
 from dialog import interaction, tts, transcribe, initial_run, DialogContext, chorus
+from voice import gather_voices_mixed_stream
 
 app = FastAPI(title='B-Cell API V3')
 app.add_middleware(
@@ -44,6 +46,12 @@ class Chat(BaseModel):
 claims = json.load(open("knowledge/talvey-claims.json", 'r'))
 chats = dict()
 
+async def save_stream_to_file(stream: AsyncGenerator[bytes, None]) -> str:
+    async with NamedTemporaryFile(suffix='.mp3', delete=False) as audio_file:
+        async for chunk in stream:
+            await audio_file.write(chunk)
+        logfire.info(f'Audio stream saved to: {audio_file.name}')
+        return audio_file.name.split('/')[-1]
 
 async def save_audios(source_audio, qtd_voices=3):
     voices = await chorus(source_audio, qtd_voices=qtd_voices)
@@ -97,7 +105,7 @@ async def send_text(chat_id:str, message:str):
 
 @app.get("/chat/mixed/{chat_id}")
 @app.get("/v3/chat/mixed/{chat_id}")
-async def send_mixed(chat_id:str, message:str):
+async def send_mixed(chat_id: str, message: str):
     if not message:
         return
     if chat_id not in chats:
@@ -105,12 +113,17 @@ async def send_mixed(chat_id:str, message:str):
     chat: Chat = chats[chat_id]
 
     message = BeautifulSoup(message, "html.parser").get_text()
-    result = (await interaction(message, chat.deps, chat.history))
+    result = await interaction(message, chat.deps, chat.history)
     update_chat(chat, result)
 
-    source_audio = await tts(result.output.answer)
+    ai_response_text = result.output.answer
 
-    audio_file_list = await save_audios(source_audio)
+    elevenlabs_streams = await gather_voices_mixed_stream(ai_response_text, qtd_voices=3)
+
+    audio_file_list = await asyncio.gather(
+        *(save_stream_to_file(stream) for stream in elevenlabs_streams)
+    )
+
     return JSONResponse(audio_file_list)
 
 @app.post("/chat/audio/{chat_id}")
@@ -126,7 +139,7 @@ async def send_audio(chat_id:str,
 
     suffix = '.' + audio.filename.split('.')[-1]
     try:
-        contents = audio.file.read()
+        contents = await audio.read()
         async with (NamedTemporaryFile(suffix=suffix) as f):
             await f.write(contents)
             logfire.info(f'Audio received: {f.name}')
@@ -140,9 +153,11 @@ async def send_audio(chat_id:str,
     result = (await interaction(transcription, chat.deps, chat.history))
     update_chat(chat, result)
 
-    source_audio = await tts(result.output.answer)
-
-    audio_file_list = await save_audios(source_audio)
+    ai_response_text = result.output.answer
+    elevenlabs_streams = await gather_voices_mixed_stream(ai_response_text, qtd_voices=3)
+    audio_file_list = await asyncio.gather(
+        *(save_stream_to_file(stream) for stream in elevenlabs_streams)
+    )
     return JSONResponse(audio_file_list)
 
 @app.get("/chat/v2/download/{file_name}")

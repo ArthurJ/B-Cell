@@ -3,12 +3,24 @@ import io
 import os
 import wave
 from random import sample
-from typing import Tuple
+from typing import Tuple, AsyncGenerator
 
 from elevenlabs.client import AsyncElevenLabs
 
+from dialog import tts_stream
+
 elevenlabs_client = AsyncElevenLabs(api_key=os.getenv('ELEVENLABS_API_KEY'))
 
+
+async def convert_voice_stream(audio_stream: AsyncGenerator[bytes, None], voice_id: str, out_format='pcm_44100'):
+    converted_stream = elevenlabs_client.speech_to_speech.convert(
+        audio=audio_stream,
+        voice_id=voice_id,
+        model_id="eleven_multilingual_sts_v2",
+        output_format=out_format,
+    )
+
+    return converted_stream
 
 async def convert_voice(audio_bytes, voice_id, out_format='pcm_44100'):
     converted = elevenlabs_client.speech_to_speech.convert(
@@ -25,6 +37,23 @@ async def convert_voice(audio_bytes, voice_id, out_format='pcm_44100'):
 
     return converted_audio_bytes
 
+
+async def gather_voices_mixed_stream(source_text: str, out_format='mp3_44100_192', qtd_voices=3):
+    voice_ids = ['ELEVEN_LABS_VOICE_ID_1', 'ELEVEN_LABS_VOICE_ID_2',
+                 'ELEVEN_LABS_VOICE_ID_3', 'ELEVEN_LABS_VOICE_ID_4',
+                 'ELEVEN_LABS_VOICE_ID_5', 'ELEVEN_LABS_VOICE_ID_6',
+                 'ELEVEN_LABS_VOICE_ID_7']
+    ids_to_use = sample(voice_ids, k=qtd_voices)
+
+    async def create_full_stream(voice_id):
+        openai_audio_stream = await tts_stream(source_text)  # Cria um novo stream da OpenAI
+        return await convert_voice_stream(openai_audio_stream, os.getenv(voice_id), out_format)
+
+    elevenlabs_streams = await asyncio.gather(
+        *(create_full_stream(i) for i in ids_to_use)
+    )
+
+    return elevenlabs_streams
 
 async def gather_voices(audio_bytes, out_format='mp3_44100_192', qtd_voices=3):
     voice_ids = ['ELEVEN_LABS_VOICE_ID_1', 'ELEVEN_LABS_VOICE_ID_2',

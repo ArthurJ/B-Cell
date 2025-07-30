@@ -120,6 +120,17 @@ async def tts_google(text:str) -> bytes:
     pcm_data = response.candidates[0].content.parts[0].inline_data.data
     return pcm_data
 
+async def tts_stream(text: str):
+    response = await openai_client.audio.speech.create(
+        model="tts-1",  # Ou "tts-1-hd"
+        voice="alloy",
+        response_format="pcm_16000",
+        input=text
+    )
+
+    async for chunk in response.iter_bytes(chunk_size=4096):
+        yield chunk
+
 async def tts(text:str) -> bytes:
     completion = openai_client.chat.completions.create(
         model="gpt-4o-mini-audio-preview",
