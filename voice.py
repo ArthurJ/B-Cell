@@ -45,7 +45,7 @@ async def gather_voices_mixed_stream(source_text: str, out_format='mp3_44100_192
 
     async def create_full_stream(voice_id):
         from dialog import tts_stream
-        openai_audio_stream = await tts_stream(source_text)  # Cria um novo stream da OpenAI
+        openai_audio_stream = tts_stream(source_text)  # Cria um novo stream da OpenAI
         return await convert_voice_stream(openai_audio_stream, os.getenv(voice_id), out_format)
 
     elevenlabs_streams = await asyncio.gather(
