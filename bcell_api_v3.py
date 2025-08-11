@@ -96,6 +96,7 @@ async def send_text(chat_id:str, message:str):
 
 
 @app.get("/chat/mixed/{chat_id}")
+@app.get("/chat/v2/mixed/{chat_id}")
 @app.get("/v3/chat/mixed/{chat_id}")
 async def send_mixed(chat_id: str, message: str):
     if not message:
@@ -114,6 +115,7 @@ async def send_mixed(chat_id: str, message: str):
     return JSONResponse(audio_file_list)
 
 @app.post("/chat/audio/{chat_id}")
+@app.post("/chat/v2/audio/{chat_id}")
 @app.post("/v3/chat/audio/{chat_id}")
 async def send_audio(chat_id:str,
                      audio: Annotated[UploadFile,
@@ -162,6 +164,7 @@ async def download_audio(file_name:str):
 
 
 @app.get("/chat/last-text/{chat_id}")
+@app.get("/chat/v2/last-text/{chat_id}")
 @app.get("/v3/chat/last-text/{chat_id}")
 async def get_last_message(chat_id:str):
     if chat_id not in chats:

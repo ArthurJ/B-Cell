@@ -50,7 +50,6 @@ transcriber = Agent(
 )
 
 bcell = Agent(
-    # model='google-gla:gemini-2.5-pro',
     model='openai:gpt-4o',
     system_prompt=open('system_prompt.md', 'r').read(),
     deps_type=DialogContext,

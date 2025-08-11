@@ -1,25 +1,24 @@
-import logging
-from collections import deque
-from tempfile import NamedTemporaryFile
-from typing import Annotated
-import tempfile
+import json
 import os
+from itertools import islice, cycle
+from typing import List, Annotated, Optional
 
+import logfire
+import tempfile
+from aiofiles.tempfile import NamedTemporaryFile
 from bs4 import BeautifulSoup
-
 from fastapi import FastAPI, HTTPException, File, UploadFile
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
-from pydantic import BaseModel
-
 from secrets import token_hex
 
-from langchain_core.chat_history import InMemoryChatMessageHistory
-from audio_native_dialog import (text_interaction, audio_interaction, mixed_interaction,
-                                 audio_interaction_v2, mixed_interaction_v2)
+from pydantic import BaseModel
+from pydantic_ai.agent import AgentRunResult
 
-app = FastAPI(title='B-Cell API')
+from dialog import interaction, tts, transcribe, initial_run, DialogContext, chorus
+
+app = FastAPI(title='B-Cell API V3')
 app.add_middleware(
     CORSMiddleware,
     # allow_origins=["https://audiofusion.com.br", "https://audiofb.com"], Definir posteriormente a URL para acesso.
@@ -30,58 +29,73 @@ app.add_middleware(
     expose_headers=["*"],
 )
 
-uvicorn_logger = logging.getLogger("uvicorn")
-uvicorn_logger.propagate = False
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s\t%(levelname)-5s\t%(message)s",
-    handlers=[logging.StreamHandler()],
-)
-app_logger = logging.getLogger(__name__)
+logfire.configure(service_name="API_v3", scrubbing=False)
+logfire.instrument_fastapi(app)
+logfire.instrument_system_metrics()
 
-chats = dict()
 
 class Chat(BaseModel):
     thread_id: str
-    context: deque
-    language: str
-    memory: InMemoryChatMessageHistory
+    history: List
+    deps: DialogContext
+    last_text: str
+    sources: Optional[List[str]]
+
+claims = json.load(open("knowledge/talvey-claims.json", 'r'))
+chats = dict()
+
+
+async def save_audios(source_audio, qtd_voices=3):
+    voices = await chorus(source_audio, qtd_voices=qtd_voices)
+    audio_list = []
+
+    for d in islice(cycle(voices), 7):
+        async with NamedTemporaryFile(suffix='.mp3',
+                                      delete_on_close=False,
+                                      delete=False) as audio_file:
+            await audio_file.write(d)
+            logfire.info(f'Audio saved: {audio_file.name}')
+            audio_list.append(audio_file.name.split('/')[-1])
+    return audio_list
+
+
+def update_chat(chat: Chat, result: AgentRunResult):
+    chat.history = result.all_messages()
+    chat.last_text = result.output.answer
+    chat.sources = [''.join(s[-1::-1].split('.')[1:])[-1::-1].split('/')[-1] for s in result.output.sources]
 
 @app.get("/new-chat")
-def new_chat(lang:str = 'en'):
+async def new_chat(lang:str='en'):
     chat_id = token_hex()
+    deps = DialogContext(talvey_claims=claims)
+    first_run = await initial_run(deps)
     chat = Chat(thread_id=chat_id,
-                context=deque(maxlen=3),
-                language=lang,
-                memory=InMemoryChatMessageHistory())
+                history=first_run.all_messages(),
+                deps=deps,
+                last_text=first_run.output.answer,
+                sources=None)
     chats[chat_id] = chat
-    app_logger.info(f'Chat created: {chat_id}')
-    return {"chat_id": chat_id}
+    logfire.info(f'Chat created: {chat_id} handled by worker PID: {os.getpid()}')
+    return {"chat_id": chat_id, 'ai_message':first_run.output.answer, 'sources':[]}
+
 
 @app.get("/chat/text/{chat_id}")
-def send_text(chat_id:str, message:str):
+async def send_text(chat_id:str, message:str):
     if not message:
         return
     if chat_id not in chats:
         raise HTTPException(status_code=404, detail="Chat not found.")
     chat: Chat = chats[chat_id]
     message = BeautifulSoup(message, "html.parser").get_text()
-    output = text_interaction(message,
-                         {"configurable": {"thread_id": chat_id}},
-                         chat.context,
-                         chat.language,
-                         chat.memory)
-    return {'ai_message': output}
+    result = (await interaction(message, chat.deps, chat.history))
+    update_chat(chat, result)
 
-@app.get("/chat/last-text/{chat_id}")
-def get_last_message(chat_id:str):
-    if chat_id not in chats:
-        raise HTTPException(status_code=404, detail="Chat not found.")
-    chat: Chat = chats[chat_id]
-    return {'ai_message': chat.memory.messages[-1].content}
+    return {'ai_message': result.output.answer, 'sources': result.output.sources}
+
 
 @app.get("/chat/mixed/{chat_id}")
-async def send_mixed(chat_id:str, message:str):
+@app.get("/chat/v2/mixed/{chat_id}")
+async def send_mixed(chat_id: str, message: str):
     if not message:
         return
     if chat_id not in chats:
@@ -89,56 +103,51 @@ async def send_mixed(chat_id:str, message:str):
     chat: Chat = chats[chat_id]
 
     message = BeautifulSoup(message, "html.parser").get_text()
-    audio_output = await mixed_interaction(message,
-                                     {"configurable": {"thread_id": chat_id}},
-                                     chat.context,
-                                     chat.language,
-                                     chat.memory)
-    with NamedTemporaryFile(suffix='.mp3',
-                            delete_on_close=False,
-                            delete=False) as audio_file:
-        audio_file.write(audio_output)
-        app_logger.info(f'Audio sent: {audio_file.name}')
-        return  FileResponse(audio_file.name, media_type='audio/mpeg')
+    result = (await interaction(message, chat.deps, chat.history))
+    update_chat(chat, result)
+
+    source_audio = await tts(result.output.answer)
+
+    audio_file_list = await save_audios(source_audio)
+    return JSONResponse(audio_file_list)
 
 @app.post("/chat/audio/{chat_id}")
+@app.post("/chat/v2/audio/{chat_id}")
 async def send_audio(chat_id:str,
-               audio: Annotated[UploadFile,
-               File(description="filetypes: flac, m4a, mp3, mp4, mpeg, oga, ogg, wav, webm")]=None):
+                     audio: Annotated[UploadFile,
+                     File(description="filetypes: flac, m4a, mp3, wav, webm")]=None):
     if not audio:
         return
-
     if chat_id not in chats:
         raise HTTPException(status_code=404, detail="Chat not found.")
     chat: Chat = chats[chat_id]
 
     suffix = '.' + audio.filename.split('.')[-1]
     try:
-        contents = audio.file.read()
-        with NamedTemporaryFile(suffix=suffix) as f:
-            f.write(contents)
-            app_logger.info(f'Audio received: {f.name}')
-            audio_output = await audio_interaction(f.name,
-                                             {"configurable": {"thread_id": chat_id}},
-                                             chat.context,
-                                             chat.language,
-                                             chat.memory)
+        contents = await audio.read()
+        async with (NamedTemporaryFile(suffix=suffix) as f):
+            await f.write(contents)
+            logfire.info(f'Audio received: {f.name}')
     except Exception as e:
-        app_logger.error(str(e), exc_info=True)
+        logfire.error(str(e), exc_info=True)
         raise HTTPException(status_code=500, detail=f'Something went wrong:\n{str(e)}')
     finally:
         audio.file.close()
 
-    with NamedTemporaryFile(suffix='.mp3',
-                            delete_on_close=False,
-                            delete=False) as audio_file:
-        audio_file.write(audio_output)
-        app_logger.info(f'Audio sent: {audio_file.name}')
-        return FileResponse(audio_file.name, media_type='audio/mpeg')
+    transcription = await transcribe(contents, audio_type=f'audio/{suffix}')
+    result = (await interaction(transcription, chat.deps, chat.history))
+    update_chat(chat, result)
+
+    source_audio = await tts(result.output.answer)
+
+    audio_file_list = await save_audios(source_audio)
+    return JSONResponse(audio_file_list)
 
 @app.get("/chat/v2/download/{file_name}")
 async def download_audio(file_name:str):
     f_name = os.path.join(tempfile.gettempdir(), file_name)
+    if os.path.basename(file_name) != file_name:
+        raise HTTPException(status_code=400, detail="Invalid file name.")
     if not os.path.exists(f_name):
         return HTTPException(status_code=404, detail=f'File not found.')
     if not os.path.isfile(f_name):
@@ -148,69 +157,12 @@ async def download_audio(file_name:str):
     with open(f_name, 'rb') as f:
         return FileResponse(f.name, media_type='audio/mpeg')
 
+
+@app.get("/chat/last-text/{chat_id}")
 @app.get("/chat/v2/last-text/{chat_id}")
 async def get_last_message(chat_id:str):
     if chat_id not in chats:
         raise HTTPException(status_code=404, detail="Chat not found.")
     chat: Chat = chats[chat_id]
-    return {'ai_message': chat.memory.messages[-1].content}
-
-async def save_audios(audios):
-    audio_list = []
-    for audio_output in audios:
-        with NamedTemporaryFile(suffix='.mp3',
-                                delete_on_close=False,
-                                delete=False) as audio_file:
-            audio_file.write(audio_output)
-            app_logger.info(f'Audio available: {audio_file.name}')
-            audio_list.append(audio_file.name.split('/')[-1])
-    return audio_list
-
-@app.get("/chat/v2/mixed/{chat_id}")
-async def send_mixed(chat_id:str, message:str):
-    if not message:
-        return
-    if chat_id not in chats:
-        raise HTTPException(status_code=404, detail="Chat not found.")
-    chat: Chat = chats[chat_id]
-
-    message = BeautifulSoup(message, "html.parser").get_text()
-    audios = await mixed_interaction_v2(message,
-                                     {"configurable": {"thread_id": chat_id}},
-                                     chat.context,
-                                     chat.language,
-                                     chat.memory)
-    audio_file_list = await save_audios(audios)
-    return JSONResponse(audio_file_list)
-
-
-@app.post("/chat/v2/audio/{chat_id}")
-async def send_audio(chat_id:str,
-               audio: Annotated[UploadFile,
-               File(description="filetypes: flac, m4a, mp3, mp4, mpeg, oga, ogg, wav, webm")]=None):
-    if not audio:
-        return
-
-    if chat_id not in chats:
-        raise HTTPException(status_code=404, detail="Chat not found.")
-    chat: Chat = chats[chat_id]
-
-    suffix = '.' + audio.filename.split('.')[-1]
-    try:
-        contents = audio.file.read()
-        with NamedTemporaryFile(suffix=suffix) as f:
-            f.write(contents)
-            app_logger.info(f'Audio received: {f.name}')
-            audios = await audio_interaction_v2(f.name,
-                                                {"configurable": {"thread_id": chat_id}},
-                                                chat.context,
-                                                chat.language,
-                                                chat.memory)
-    except Exception as e:
-        app_logger.error(str(e), exc_info=True)
-        raise HTTPException(status_code=500, detail=f'Something went wrong:\n{str(e)}')
-    finally:
-        audio.file.close()
-
-    audio_file_list = await save_audios(audios)
-    return JSONResponse(audio_file_list)
+    logfire.info(f'Sources used: {chat.sources}')
+    return {'ai_message': chat.last_text, 'sources': chat.sources}
