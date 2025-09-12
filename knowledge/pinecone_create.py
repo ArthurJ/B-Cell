@@ -15,7 +15,7 @@ except:
 
 pc.create_index(
     name=index_name,
-    dimension=3072, # dimensionalidade do text-embedding-3-large
+    dimension=3072, # text-embedding-3-large dimensionality
     metric="cosine",
     spec=ServerlessSpec(
         cloud="aws",

@@ -13,17 +13,14 @@ from langchain_experimental.text_splitter import SemanticChunker
 
 embeddings = OpenAIEmbeddings(model='text-embedding-3-large')
 
-pdf_paths = glob.glob("knowledge/Originals/**/*.pdf", recursive=True)
-md_paths = glob.glob("knowledge/Summaries/**/*.md", recursive=True)
+text_splitter = SemanticChunker(embeddings,
+                                breakpoint_threshold_type="gradient")
+pc = Pinecone(api_key=os.getenv('PINECONE_API_KEY'))
+index = pc.Index(os.getenv('PINECONE_INDEX'))
+vector_store = PineconeVectorStore(embedding=embeddings, index=index)
+
 pages = []
-
-# for file_path in pdf_paths:
-#     if Path(file_path).is_file():
-#         print(file_path)
-#         loader = PyPDFLoader(file_path)
-#         for page in loader.lazy_load():
-#             pages.append(page)
-
+md_paths = glob.glob("Summaries/**/*.md", recursive=True)
 for file_path in md_paths:
     if Path(file_path).is_file():
         print(file_path)
@@ -31,18 +28,22 @@ for file_path in md_paths:
         for page in loader.lazy_load():
             pages.append(page)
 
+all_splits = text_splitter.split_documents(pages)
+print(f"Split blog post into {len(all_splits)} sub-documents.")
+vector_store.add_documents(documents=all_splits)
 
-text_splitter = SemanticChunker(embeddings,
-                                breakpoint_threshold_type="gradient")
+
+pages = []
+pdf_paths = glob.glob("Originals/**/*.pdf", recursive=True)
+for file_path in pdf_paths:
+    if Path(file_path).is_file():
+        print(file_path)
+        loader = PyPDFLoader(file_path)
+        for page in loader.lazy_load():
+            pages.append(page)
 
 all_splits = text_splitter.split_documents(pages)
-
 print(f"Split blog post into {len(all_splits)} sub-documents.")
-
-pc = Pinecone(api_key=os.getenv('PINECONE_API_KEY'))
-index = pc.Index(os.getenv('PINECONE_INDEX'))
-
-vector_store = PineconeVectorStore(embedding=embeddings, index=index)
 vector_store.add_documents(documents=all_splits)
 
 # if __name__=='__main__':
