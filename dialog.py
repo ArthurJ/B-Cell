@@ -93,7 +93,9 @@ async def tts(text:str) -> bytes:
         messages=[
             {
                 "role": "system",
-                "content": 'You are helpful and collaborative. Your voice is ethereal and wise.'
+                "content": "You are a voice actor."
+                           "Do not improvise."
+                           "Your character's voice sounds ethereal and wise, but also helpful and collaborative."
             },
             {
                 "role": "user",
