@@ -1,250 +1,369 @@
 {
   "drug_info": {
+    "source_claim_id": [1, 69, 83],
     "name": "TALVEY®",
-    "generic_name": "talquetamab",
-    "class": "first-in-class T-cell-redirecting bispecific antibody (BsAb)",
-    "target": "GPRC5D (G protein-coupled receptor class C group 5 member D)",
+    "class": "first in class TCR BsAb targeting GPRC5D",
+    "target": "GPRC5D",
     "approval_date": {
-      "US": "August 2023",
       "EU": "August 2023"
-    }
+    },
+    "data_source_summary": "Consolidated data based on the Claims Matrix, reflecting longer-term follow-up from the MonumenTAL-1 trial (e.g., ASCO 2025, EHA 2024/2025 presentations).",
+    "references": [
+      "TALVEY® SmPC (EU), 2025.",
+      "Chari A et al. Lancet Haematol 2025; 12(4):e269–e281.",
+      "Einsele H et al. Adv Ther 2024; 41(4):1576–1593."
+    ]
   },
   "indication": {
-    "primary": "Monotherapy for adult patients with relapsed/refractory multiple myeloma (R/R MM)",
+    "source_claim_id": [8],
+    "primary": "Monotherapy for the treatment of adult patients with TCE R/R MM who have received at least 3 prior therapies, including an immunomodulatory agent, a proteasome inhibitor and an anti CD38 antibody, and have demonstrated disease progression on the last therapy.",
     "requirements": [
       "Received at least 3 prior therapies",
-      "Including an immunomodulatory agent, a proteasome inhibitor, and an anti-CD38 antibody",
-      "Demonstrated disease progression on the last therapy"
+      "Including an immunomodulatory agent, a proteasome inhibitor and an anti CD38 antibody"
+    ],
+    "references": [
+      "TALVEY® SmPC (EU), 2025."
     ]
   },
   "mechanism": {
-    "target_description": "GPRC5D is a novel target highly expressed on MM cells, independent of BCMA expression",
-    "target_expression": {
-      "myeloma_cells": "High",
-      "normal_B_cells": "Low/Limited",
-      "normal_tissues": "Minimal expression in essential tissues such as brain, heart, and lungs",
-      "other_tumours": "No substantial expression in other tumour types"
-    },
-    "action": "Redirects T-cells to target GPRC5D-expressing myeloma cells",
+    "source_claim_id": [38, 41, 47, 76, 81],
+    "target_description": "GPRC5D is a novel target highly expressed on MM cells, independent of BCMA expression.",
+    "action": "TALVEY® is a BsAb that targets GPRC5D expressing malignant plasma cells and CD3 on T cells.",
     "advantages": [
-      "Preserves normal B-cells and plasma cells",
-      "May lower severe infection risk"
+      "Preserves patients’ B cells to help maintain their immune response.",
+      "GPRC5D has little to no expression on normal human haematopoietic cells, including B cells and bone marrow progenitors."
+    ],
+    "references": [
+      "TALVEY® SmPC (EU), 2025.",
+      "Kodama T et al. Mol Cancer Ther 2019; 18(9):1555–1564.",
+      "Atamaniuk J et al. Eur J Clin Invest 2012; 42(9):953–960.",
+      "Einsele H et al. Adv Ther 2024; 41(4):1576–1593.",
+      "Schinke C et al. Blood Adv 2025; doi:10.1182/bloodadvances.2025016613.",
+      "Smith EL et al. Sci Transl Med 2019; 11(485):eaau7746."
     ]
   },
   "clinical_trials": {
     "primary_trial": {
+      "source_claim_id": [7, 84, 86, 88],
       "name": "MonumenTAL-1",
       "id": "NCT04634552",
-      "design": "Single-arm, open-label, multicenter Phase I/II study",
-      "patients": "375 triple-class exposed patients with R/R MM",
-      "follow_up": "20-30 months",
-      "cohorts": [
-        {
-          "description": "Prior T-cell-redirecting therapy naïve",
-          "dosing": "0.4 mg/kg weekly SC",
-          "number": 143,
-          "median_follow_up": 29.8
-        },
-        {
-          "description": "Prior T-cell-redirecting therapy naïve",
-          "dosing": "0.8 mg/kg biweekly SC",
-          "number": 154,
-          "median_follow_up": 23.4
-        },
-        {
-          "description": "Prior T-cell-redirecting therapy exposed",
-          "dosing": "Either 0.4 mg/kg weekly SC or 0.8 mg/kg biweekly SC",
-          "number": 78,
-          "median_follow_up": 20.5
-        }
+      "design": "Phase I/II, single arm, open label, multicentre study.",
+      "total_patients": 375,
+      "patient_population": "adult patients with triple class exposed R/R MM",
+      "references": [
+        "TALVEY® SmPC (EU), 2025.",
+        "Rasche L et al. Presented at: American Society of Clinical Oncology (ASCO) Congress; 30 May–3 June 2025; Chicago, IL (Poster no. 96).",
+        "Chari A et al. N Engl J Med 2022; 387(24):2232–2244."
       ],
       "endpoints": {
-        "primary": "Overall response rate (ORR)",
+        "source_claim_id": [89],
+        "primary": "overall response rate (ORR)",
         "secondary": [
-          "Depth of response",
-          "Duration of response (DOR)",
-          "Time to response (TTR)",
-          "Minimal residual disease (MRD) negativity rate",
-          "Progression-free survival (PFS)",
-          "Overall survival (OS)",
-          "Safety",
-          "Immunogenicity",
-          "Pharmacodynamics"
+          "depth of response",
+          "duration of response (DOR)",
+          "time to response (TTR)",
+          "minimal residual disease (MRD) negativity rate",
+          "progression free survival (PFS)",
+          "overall survival (OS)",
+          "safety"
+        ],
+        "references": [
+          "Chari A et al. Lancet Haematol 2025; 12(4):e269–e281.",
+          "Rasche L et al. Presented at: American Society of Clinical Oncology (ASCO) Congress; 30 May–3 June 2025; Chicago, IL (Poster no. 96)."
+        ]
+      },
+      "cohorts_long_term_fu": {
+        "references": [
+            "Rasche L et al. Presented at: American Society of Clinical Oncology (ASCO) Congress; 30 May–3 June 2025; Chicago, IL (Poster no. 96)."
+        ],
+        "cohorts": [
+          {
+            "source_claim_id": [86, 90, 134],
+            "description": "Prior T-cell-redirecting therapy naïve",
+            "dosing_schedule": "0.4 mg/kg weekly SC",
+            "patient_count": 143,
+            "median_follow_up_months": 38.2
+          },
+          {
+            "source_claim_id": [86, 90, 134],
+            "description": "Prior T-cell-redirecting therapy naïve",
+            "dosing_schedule": "0.8 mg/kg biweekly SC",
+            "patient_count": 154,
+            "median_follow_up_months": 31.2
+          },
+          {
+            "source_claim_id": [86, 90, 134],
+            "description": "Prior T-cell-redirecting therapy exposed",
+            "dosing_schedule": "0.4 mg/kg weekly SC or 0.8 mg/kg biweekly SC",
+            "patient_count": 78,
+            "median_follow_up_months": 30.3
+          }
         ]
       }
     }
   },
   "efficacy_results": {
-    "overall_response_rate": {
-      "weekly_dosing": 74.1,
-      "biweekly_dosing": 69.5,
-      "prior_tcell_therapy": 66.7
+    "references": [
+        "Rasche L et al. Presented at: American Society of Clinical Oncology (ASCO) Congress; 30 May–3 June 2025; Chicago, IL (Poster no. 96)."
+    ],
+    "weekly_dosing": {
+      "source_claim_id": [4, 27, 29, 123, 124, 136, 138, 142],
+      "overall_response_rate_percent": 74.1,
+      "complete_response_rate_or_better_percent": 32.9,
+      "vgpr_or_better_percent": 59.5,
+      "median_duration_of_response_months": 9.5,
+      "median_pfs_months": 7.5,
+      "median_os_months": 34,
+      "os_rate_36_month_percent": 49.3,
+      "mrd_negativity_rate_percent": 64.3
     },
-    "complete_response_rate": {
-      "across_all_cohorts": "≥32.9%"
+    "biweekly_dosing": {
+      "source_claim_id": [4, 27, 29, 125, 126, 136, 138, 143],
+      "overall_response_rate_percent": 69.5,
+      "complete_response_rate_or_better_percent": 40.3,
+      "vgpr_or_better_percent": 59.1,
+      "median_duration_of_response_months": 17.5,
+      "median_pfs_months": 11.2,
+      "median_os_months": "Not Reached",
+      "os_rate_36_month_percent": 60.8,
+      "mrd_negativity_rate_percent": 65.2
     },
-    "time_to_response": {
-      "weekly_dosing": {"median_months": 1.2, "range": "0.2-10.9"},
-      "biweekly_dosing": {"median_months": 1.3, "range": "0.2-4.9"},
-      "prior_tcell_therapy": {"median_months": 1.2, "range": "0.2-7.5"}
+    "prior_tcell_therapy_exposed": {
+      "source_claim_id": [4, 29, 127, 128, 132, 136, 138, 141],
+      "overall_response_rate_percent": 66.7,
+      "complete_response_rate_or_better_percent": 42.3,
+      "vgpr_or_better_percent": 55.1,
+      "median_duration_of_response_months": 19.2,
+      "median_pfs_months": 7.7,
+      "median_os_months": 28.3,
+      "os_rate_36_month_percent": 44.6,
+      "mrd_negativity_rate_percent": 57.1
     },
-    "time_to_complete_response": {
-      "weekly_dosing": {"median_months": 3.0, "range": "1.1-12.7"},
-      "biweekly_dosing": {"median_months": 5.8, "range": "1.2-16.8"},
-      "prior_tcell_therapy": {"median_months": 2.7, "range": "1.2-18.7"}
-    },
-    "duration_of_response": {
-      "weekly_dosing": {"median_months": 9.5, "ci_95": "6.7-13.4"},
-      "biweekly_dosing": {"median_months": 17.5, "ci_95": "12.5-NE"},
-      "comparison": "Better durability observed in biweekly vs. weekly cohort"
-    },
-    "progression_free_survival": {
-      "weekly_dosing": {"median_months": 7.5, "ci_95": "5.7-9.4"},
-      "biweekly_dosing": {"median_months": 11.2, "ci_95": "8.4-14.6"},
-      "prior_tcell_therapy": {"median_months": 7.7, "ci_95": "4.1-14.5"},
-      "prior_car_t": {"median_months": 12.3},
-      "prior_bsab": {"median_months": 4.1}
-    },
-    "overall_survival": {
-      "weekly_dosing": {"rate_24month": 60.6, "ci_95": "51.7-68.4"},
-      "biweekly_dosing": {"rate_24month": 67.1, "ci_95": "58.3-74.4"},
-      "prior_tcell_therapy": {"rate_24month": 57.3, "ci_95": "43.5-68.9"}
-    },
-    "mrd_negativity": {
-      "weekly_dosing": 30.8,
-      "biweekly_dosing": 29.7
-    },
-    "specific_populations": {
-      "prior_car_t": {"ORR": 71.4, "patients": "40/56"},
-      "prior_bsab": {"ORR": 57.7, "patients": "15/26"},
-      "high_risk_cytogenetics": {
-        "weekly_and_biweekly": ">70%",
-        "prior_tcell_therapy": "52%"
+    "subgroup_analysis": {
+      "prior_bcma_exposure_details": {
+        "source_claim_id": [26, 31, 33, 42],
+        "references": ["Rasche L et al. Presented at: European Hematology Association (EHA) Congress; 13–16 June 2024; Madrid, Spain (Poster no. P915)."],
+        "subgroups": [
+          {
+            "subgroup": "Prior CAR-T therapy",
+            "orr_percent": 71.4,
+            "median_pfs_months": 12.3
+          },
+          {
+            "subgroup": "Prior BsAb therapy",
+            "orr_percent": 57.7,
+            "median_pfs_months": 4.1
+          }
+        ]
       },
-      "subgroups": "ORR results consistent across most subgroups (including age ≥75 years, baseline ISS Stage III disease, impaired baseline renal function and refractoriness to prior therapy), except among patients with extramedullary disease"
+      "by_prior_lines_of_therapy_biweekly": {
+        "source_claim_id": [14, 15, 16],
+        "references": ["Ye JC et al. Presented at: International Myeloma Society (IMS) Annual Meeting; 25–28 September 2024; Rio de Janeiro, Brazil (Poster no. P-098)."],
+        "subgroups": [
+          {
+            "lines_of_therapy": "<=4",
+            "median_dor_months": "Not Reached",
+            "median_pfs_months": 17.8,
+            "os_rate_24_month_percent": 75
+          },
+          {
+            "lines_of_therapy": ">=5",
+            "median_dor_months": 13,
+            "median_pfs_months": 8.5,
+            "os_rate_24_month_percent": 59
+          }
+        ]
+      }
     }
   },
   "comparison_to_standard_of_care": {
-    "weekly_dosing_vs_soc": {
-      "ORR_likelihood": "2.7-fold more likely",
-      "VGPR_likelihood": "4.7-fold more likely",
-      "CR_likelihood": "78.1-fold more likely",
-      "PFS": {"TALVEY": 7.5, "SOC": 4.1, "p_value": "<0.0001"},
-      "TTNT": {"TALVEY": 9.1, "SOC": 4.6, "p_value": "<0.0001"},
-      "OS": {"TALVEY": "not reached", "SOC": 9.2, "p_value": "<0.0001"},
-      "DOR": {"TALVEY": 9.5, "SOC": 7.7}
+    "source_comparison_studies": [
+      "LocoMMotion",
+      "MoMMent"
+    ],
+    "standard_of_care_outcomes": {
+      "source_claim_id": [62, 63, 64],
+      "summary": "Clinical outcomes observed with real-world Standard of Care treatments in TCE R/R MM patients from pooled analysis.",
+      "overall_response_rate_percent": 32.5,
+      "median_duration_of_response_months": 8.3,
+      "median_pfs_months": 4.6,
+      "median_os_months": 14.8,
+      "references": [
+        "Weisel K et al. Presented at: European Hematology Association (EHA) Congress; 12–15 June 2025; Milan, Italy (Poster no. PS1783)."
+      ]
     },
-    "biweekly_dosing_vs_soc": {
-      "ORR_likelihood": "2.6-fold more likely",
-      "VGPR_likelihood": "5-fold more likely",
-      "CR_likelihood": "101.1-fold more likely",
-      "PFS": {"TALVEY": 14.2, "SOC": 4.1, "p_value": "<0.0001"},
-      "TTNT": {"TALVEY": 13.3, "SOC": 4.5, "p_value": "<0.0001"},
-      "OS": {"TALVEY": "not reached", "SOC": 10.3, "p_value": "<0.0001"},
-      "DOR": {"TALVEY": "not reached", "SOC": 9, "p_value": "0.0015"}
+    "talvey_indirect_comparison_vs_soc": {
+      "source_claim_id": [30, 70, 71, 72, 73, 74, 75],
+      "references": [
+        "Einsele H et al. Adv Ther 2024; 41(4):1576–1593.",
+        "Einsele H et al. Presented at: European Hematology Association (EHA) Congress; 12–15 June 2025; Milan, Italy (Poster no. PS1737).",
+        "Weisel K et al. Presented at: European Hematology Association (EHA) Congress; 12–15 June 2025; Milan, Italy (Poster no. PS1783)."
+      ],
+      "weekly_dosing_vs_soc": {
+        "response_likelihoods_fold_increase": {
+          "orr": 2.6,
+          "vgpr": 4.6,
+          "cr": 30.8
+        },
+        "median_pfs_months": {
+          "talvey": 7.5,
+          "soc": 4.1
+        },
+        "median_os_months": {
+          "talvey": "Not Reached",
+          "soc": 9.2
+        }
+      },
+      "biweekly_dosing_vs_soc": {
+        "response_likelihoods_fold_increase": {
+          "orr": 2.6,
+          "vgpr": 5,
+          "cr": 52.2
+        },
+        "median_pfs_months": {
+          "talvey": 14.2,
+          "soc": 4.1
+        },
+        "median_os_months": {
+          "talvey": "Not Reached",
+          "soc": 10.3
+        }
+      }
     }
   },
-  "sequential_therapy": {
-    "post_TALVEY_outcomes": {
-      "subsequent_CAR_T": {"ORR": 64.7, "patients": "11/17", "CR_or_better": "35%"},
-      "subsequent_anti_BCMA_CAR_T": {"ORR": 77.8, "patients": "7/9"},
-      "subsequent_non_GPRC5D_BsAb": {"ORR": 60.9, "patients": "14/23", "CR_or_better": "30%"},
-      "subsequent_anti_BCMA_BsAb": {"ORR": 57.9, "patients": "11/19"},
-      "conclusion": "Robust treatment response seen across successive therapy lines, whether CAR-T or non-GPRC5D BsAbs"
+  "sequential_therapy_outcomes": {
+    "source_claim_id": [115, 116, 117, 118, 119, 121, 122],
+    "summary": "Efficacy of subsequent T-cell redirecting therapies was retained after patients had received TALVEY®.",
+    "references": [
+      "Sanchez L et al. Presented at: 65th American Society of Hematology (ASH) Annual Meeting and Exposition; 9–12 December 2023; San Diego, CA (Presentation no. 2007)."
+    ],
+    "post_talvey_CAR_T": {
+      "orr_percent": 64.7,
+      "patient_count": "11/17",
+      "cr_or_better_percent": 35
+    },
+    "post_talvey_anti_BCMA_CAR_T": {
+      "orr_percent": 77.8,
+      "patient_count": "7/9"
+    },
+    "post_talvey_non_GPRC5D_BsAb": {
+      "orr_percent": 60.9,
+      "patient_count": "14/23",
+      "cr_or_better_percent": 30
+    },
+    "post_talvey_anti_BCMA_BsAb": {
+      "orr_percent": 57.9,
+      "patient_count": "11/19"
     }
   },
   "safety_profile": {
-    "adverse_events_over_40_percent": [
-      {"event": "Cytokine release syndrome (CRS)", "frequency": 77},
-      {"event": "Taste changes", "frequency": 72},
-      {"event": "Hypogammaglobulinaemia", "frequency": 67},
-      {"event": "Nail disorder", "frequency": 56},
-      {"event": "Musculoskeletal pain", "frequency": 48},
-      {"event": "Anaemia", "frequency": 47},
-      {"event": "Skin disorder", "frequency": 43},
-      {"event": "Fatigue", "frequency": 43},
-      {"event": "Weight decreased", "frequency": 40}
-    ],
-    "cytokine_release_syndrome": {
-      "weekly_dosing": {"incidence": 79, "grade_3_4": 2.1},
-      "biweekly_dosing": {"incidence": 74.7, "grade_3_4": 0.7},
-      "prior_tcell_therapy": {"grade_3_4": 2},
-      "notes": "Majority were Grade 1 or 2, generally occurred during step-up dosing phase or initial treatment dose"
+    "adverse_events_summary": {
+      "source_claim_id": [46],
+      "references": ["TALVEY® SmPC (EU), 2025."],
+      "events_over_40_percent": [
+        { "event": "CRS", "frequency_percent": 77 },
+        { "event": "Taste changes", "frequency_percent": 72 },
+        { "event": "Hypogammaglobulinaemia", "frequency_percent": 67 },
+        { "event": "Nail disorder", "frequency_percent": 56 },
+        { "event": "Musculoskeletal pain", "frequency_percent": 48 },
+        { "event": "Anaemia", "frequency_percent": 47 },
+        { "event": "Fatigue", "frequency_percent": 43 },
+        { "event": "Weight decreased", "frequency_percent": 40 }
+      ]
     },
-    "ICANS": {
-      "weekly_dosing": 10.7,
-      "biweekly_dosing": 11,
-      "prior_tcell_therapy": 2.9
-    },
-    "infections": {
-      "weekly_dosing": {"incidence": 60.8, "grade_3_4": 22.4, "opportunistic": 3.5},
-      "biweekly_dosing": {"incidence": 70.1, "grade_3_4": 20.1, "opportunistic": 5.5},
-      "prior_tcell_therapy": {"incidence": 76.9, "grade_3_4": 25.6, "opportunistic": 5.9},
-      "serious_infection_rate": 19,
-      "notes": "Infection rates remained lower than in studies of BCMA targeted BsAbs"
-    },
-    "GPRC5D_related_AEs": {
-      "severity": "Mostly Grade 1/2",
-      "discontinuations": "6 patients discontinued due to skin-related AEs or taste changes, none due to nail-related AEs",
-      "early_onset": "Associated with higher likelihood of response"
-    },
-    "immunogenicity": "The incidence of immunogenicity did not affect the pharmacokinetics, safety or efficacy of TALVEY®",
-    "discontinuation_rates": {
+    "discontinuation_rate_due_to_aes_percent": {
+      "source_claim_id": [50, 51, 52],
+      "references": ["Chari A et al. Lancet Haematol 2025; 12(4):e269–e281."],
       "weekly_dosing": 5,
-      "biweekly_dosing": 10,
-      "prior_tcell_therapy": 5.1
+      "biweekly_dosing": 9,
+      "prior_tcell_therapy": 5
     },
-    "hypogammaglobulinaemia_management": {
-      "weekly_dosing": {"IVIG_required": 16},
-      "biweekly_dosing": {"IVIG_required": 14},
-      "prior_tcell_therapy": {"IVIG_required": 24}
-    }
+    "key_aes_details": {
+      "crs": {
+        "source_claim_id": [167, 168, 169],
+        "references": ["TALVEY® SmPC (EU), 2025.", "Rasche L et al. Presented at: American Society of Clinical Oncology (ASCO) Congress; 30 May–3 June 2025; Chicago, IL (Poster no. 96)."],
+        "weekly_dosing_incidence_percent": 79,
+        "biweekly_dosing_incidence_percent": 75.3,
+        "notes": "The majority of CRS events were Grade 1 or 2, and generally occurred during the step up dosing phase or with the initial treatment dose."
+      },
+      "icans": {
+        "source_claim_id": [170],
+        "references": ["Chari A et al. Lancet Haematol 2025; 12(4):e269–e281.","TALVEY® SmPC (EU), 2025."],
+        "weekly_dosing_incidence_percent": 11,
+        "biweekly_dosing_incidence_percent": 10,
+        "prior_tcell_therapy_incidence_percent": 4
+      },
+      "infections": {
+        "source_claim_id": [161, 162],
+        "references": ["Rasche L et al. Presented at: American Society of Clinical Oncology (ASCO) Congress; 30 May–3 June 2025; Chicago, IL (Poster no. 96)."],
+        "weekly_dosing_incidence_percent": 60.8,
+        "weekly_dosing_grade_3_4_percent": 23.1,
+        "biweekly_dosing_incidence_percent": 70.8,
+        "biweekly_dosing_grade_3_4_percent": 21.4
+      }
+    },
+    "newly_identified_signals": [
+      {
+        "source_claim_id": [145],
+        "references": ["Rasche L et al. Presented at: American Society of Clinical Oncology (ASCO) Congress; 30 May–3 June 2025; Chicago, IL (Poster no. 96)."],
+        "signal": "Ataxia/balance disorders",
+        "prevalence": "Low (1 patient in the biweekly cohort)",
+        "source_observation": "Identified during the >=2.5 year follow up of the MonumenTAL 1 trial"
+      }
+    ]
   },
   "patient_reported_outcomes": {
-    "weekly_dosing": {
-      "HRQoL_improvements": {
-        "GHS": "43% of patients",
-        "functioning": "20-41% of patients",
-        "symptoms": "78-92% of patients"
-      },
-      "pain_improvement": 86,
-      "fatigue_improvement": 78,
-      "EQ_5D_5L_VAS_score": {"LS_mean_change": 9.4, "ci_95": "3.5-15.3"}
+    "source_claim_id": [172, 173, 174, 175, 176],
+    "references": ["Schinke C et al. Cancer 2025; 131(14):e35927."],
+    "source_population": "Phase II of the MonumenTAL 1 trial in 118 patients receiving TALVEY® 0.8 mg/kg biweekly.",
+    "summary": "Patients with R/R MM who received biweekly TALVEY® reported meaningful improvements in HRQoL measures, including pain and fatigue.",
+    "improvements_by_cycle_21": {
+      "eortc_qlq_c30_domains_ls_mean_change": {
+        "global_health_status": "+5",
+        "physical_functioning": "+5",
+        "emotional_functioning": "+12.5",
+        "fatigue": "+4",
+        "pain_scores": "-11"
+      }
     }
   },
   "dosing_administration": {
+    "source_claim_id": [92, 93, 100, 101, 102, 105],
+    "references": ["TALVEY® SmPC (EU), 2025."],
     "routes": "Subcutaneous (SC)",
     "schedules": ["Weekly (0.4 mg/kg)", "Biweekly (0.8 mg/kg)"],
-    "step_up_dosing": {
-      "weekly_schedule": [
-        {"day": 1, "dose": "0.01 mg/kg", "notes": "Step-up dose 1"},
-        {"day": 3, "dose": "0.06 mg/kg", "notes": "Step-up dose 2"},
-        {"day": 5, "dose": "0.4 mg/kg", "notes": "Last step-up dose"},
-        {"maintenance": "0.4 mg/kg weekly thereafter"}
+    "step_up_dosing": "Required to reduce the risk of CRS.",
+    "premedication": "Pretreatment with a corticosteroid, antihistamine and antipyretic is required 1–3 hours prior to administration of each step up dose.",
+    "monitoring": "Patients should be monitored for 48 hours after administration of all doses within the step up dosing phase for signs and symptoms of CRS and ICANS.",
+    "treatment_duration": "Until disease progression or unacceptable toxicity."
+  },
+  "real_world_evidence": {
+    "outpatient_administration": {
+      "source_claim_id": [106, 107, 108, 109],
+      "references": [
+        "Soefje S et al. Presented at: European Hematology Association (EHA) Congress; 12–15 June 2025; Milan, Italy (Poster no. PS1764).",
+        "Lund T et al. Eur J Haematol 2025; 115(4):358–366."
       ],
-      "biweekly_schedule": [
-        {"day": 1, "dose": "0.01 mg/kg", "notes": "Step-up dose 1"},
-        {"day": 3, "dose": "0.06 mg/kg", "notes": "Step-up dose 2"},
-        {"day": 5, "dose": "0.4 mg/kg", "notes": "Step-up dose 3"},
-        {"day": 7, "dose": "0.8 mg/kg", "notes": "Last step-up dose"},
-        {"maintenance": "0.8 mg/kg once every 2 weeks thereafter"}
-      ]
+      "feasibility": "Outpatient administration is considered feasible and is expected to provide benefits to patients and healthcare centres.",
+      "findings": "AEs associated with step up dosing were manageable in outpatient settings, and patients had a reduced length of hospital stay vs. inpatient delivery."
     },
-    "premedication": "For each dose of the TALVEY® step-up dosing schedule, pretreatment with a corticosteroid, antihistamine and antipyretic is required 1-3 hours prior to administration of TALVEY® to reduce the risk of CRS",
-    "monitoring": "Patients should be instructed to remain within proximity of a healthcare facility and monitored for 48 hours after administration of all doses within the TALVEY® step-up dosing phase for signs and symptoms of CRS and ICANS",
-    "switching": "Patients who receive TALVEY® according to the 0.4 mg/kg weekly dosing schedule and have attained an adequate clinical response that is confirmed in at least two consecutive disease assessments can be considered for a switch to the 0.8 mg/kg biweekly dosing schedule",
-    "treatment_duration": "Patients should be treated with TALVEY® until disease progression or unacceptable toxicity"
+    "efficacy_and_safety_outcomes": {
+      "source_claim_id": [178, 179],
+      "references": [
+        "Janakiram M et al. Presented at: 66th American Society of Hematology (ASH) Annual Meeting and Exposition; 7–10 December 2024; San Diego, CA (Abstract no. 3368).",
+        "Rasche L et al. Presented at: American Society of Clinical Oncology (ASCO) Congress; 30 May–3 June 2025; Chicago, IL (Poster no. 96)."
+      ],
+      "source": "Retrospective real world study from 7 IMF MM academic centers (N=118).",
+      "orr_percent": 65,
+      "conclusion": "The ORR is consistent with the ORR of 67% achieved in BCMA TCR therapy exposed patients in the MonumenTAL 1 trial."
+    }
   },
-  "patient_materials": {
-    "patient_card": "Each patient/carer should be provided with a TALVEY® Patient Card. This card explains the risks associated with CRS and neurological toxicity, including ICANS, while also serving as a warning for other healthcare professionals that the patient is receiving TALVEY®"
-  },
-  "references": {
-    "primary_sources": [
-      "TALVEY® SmPC (EU), 2024",
-      "Rasche L et al. Presented at: European Hematology Association (EHA) Congress; 13-16 2024; Madrid, Spain (Poster no. P915)",
-      "Einsele H et al. Adv Ther 2024; 41(4):1576-1593",
-      "Chari A et al. N Engl J Med 2022; 387(24):2232-2244",
-      "Chari A et al. Clin Lymphoma Myeloma Leuk 2024; 24(10):665-693.e14"
-    ]
-  }
+  "treatment_guideline_recommendations": [
+    {
+      "source_claim_id": [61],
+      "references": ["Dimopoulos MA et al. Nat Rev Clin Oncol 2025; 22(9):680–700."],
+      "guideline": "2025 EHA EMN Guidelines",
+      "recommendation": "TALVEY® is recommended for use at second or subsequent relapse."
+    }
+  ]
 }
