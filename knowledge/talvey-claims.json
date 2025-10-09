@@ -11,7 +11,7 @@
     "references": [
       "TALVEY® SmPC (EU), 2025.",
       "Chari A et al. Lancet Haematol 2025; 12(4):e269–e281.",
-      "Einsele H et al. Adv Ther 2024; 41(4):1576–1593."
+      "Einsele H et al. Adv Ther 2024; 41(4):1576–e1593."
     ]
   },
   "indication": {
@@ -104,10 +104,11 @@
   },
   "efficacy_results": {
     "references": [
-        "Rasche L et al. Presented at: American Society of Clinical Oncology (ASCO) Congress; 30 May–3 June 2025; Chicago, IL (Poster no. 96)."
+        "Rasche L et al. Presented at: American Society of Clinical Oncology (ASCO) Congress; 30 May–3 June 2025; Chicago, IL (Poster no. 96).",
+        "Chari A et al. Lancet Haematol 2025; 12(4):e269–e281."
     ],
     "weekly_dosing": {
-      "source_claim_id": [4, 27, 29, 123, 124, 136, 138, 142],
+      "source_claim_id": [4, 20, 27, 28, 29, 123, 124, 136, 138, 142],
       "overall_response_rate_percent": 74.1,
       "complete_response_rate_or_better_percent": 32.9,
       "vgpr_or_better_percent": 59.5,
@@ -115,10 +116,11 @@
       "median_pfs_months": 7.5,
       "median_os_months": 34,
       "os_rate_36_month_percent": 49.3,
-      "mrd_negativity_rate_percent": 64.3
+      "mrd_negativity_rate_percent": 64.3,
+      "median_ttr_months": 1.2
     },
     "biweekly_dosing": {
-      "source_claim_id": [4, 27, 29, 125, 126, 136, 138, 143],
+      "source_claim_id": [4, 20, 27, 28, 29, 125, 126, 136, 138, 143],
       "overall_response_rate_percent": 69.5,
       "complete_response_rate_or_better_percent": 40.3,
       "vgpr_or_better_percent": 59.1,
@@ -126,10 +128,11 @@
       "median_pfs_months": 11.2,
       "median_os_months": "Not Reached",
       "os_rate_36_month_percent": 60.8,
-      "mrd_negativity_rate_percent": 65.2
+      "mrd_negativity_rate_percent": 65.2,
+      "median_ttr_months": 1.3
     },
     "prior_tcell_therapy_exposed": {
-      "source_claim_id": [4, 29, 127, 128, 132, 136, 138, 141],
+      "source_claim_id": [4, 20, 28, 29, 127, 128, 132, 136, 138, 141],
       "overall_response_rate_percent": 66.7,
       "complete_response_rate_or_better_percent": 42.3,
       "vgpr_or_better_percent": 55.1,
@@ -137,7 +140,8 @@
       "median_pfs_months": 7.7,
       "median_os_months": 28.3,
       "os_rate_36_month_percent": 44.6,
-      "mrd_negativity_rate_percent": 57.1
+      "mrd_negativity_rate_percent": 57.1,
+      "median_ttr_months": 1.2
     },
     "subgroup_analysis": {
       "prior_bcma_exposure_details": {
