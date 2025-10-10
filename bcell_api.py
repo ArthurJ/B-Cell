@@ -42,6 +42,8 @@ class Chat(BaseModel):
     sources: Optional[List[str]]
 
 claims = json.load(open("knowledge/talvey-claims.json", 'r'))
+prompt= open('system_prompt.md', 'r').read()
+
 chats = dict()
 
 
@@ -67,7 +69,7 @@ def update_chat(chat: Chat, result: AgentRunResult):
 @app.get("/new-chat")
 async def new_chat(lang:str='en'):
     chat_id = token_hex()
-    deps = DialogContext(talvey_claims=claims)
+    deps = DialogContext(talvey_claims=claims, system_prompt=prompt)
     first_run = await initial_run(deps)
     chat = Chat(thread_id=chat_id,
                 history=first_run.all_messages(),
