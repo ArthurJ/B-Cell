@@ -66,7 +66,7 @@ transcriber = Agent(
 )
 
 judge = Agent(
-    model='openai:gpt-4o',
+    model='openai:gpt-4o-mini',
     deps_type=DialogContext,
     tools=tools,
     output_type=JudgementType,
@@ -116,22 +116,22 @@ async def interaction(query: str, dependencies: DialogContext, chat_history):
         message_history=chat_history,
         deps=dependencies,
     )
-    # criteria = False
-    # retries = 0
-    # while not criteria and retries<3:
-    #     print(b_cell_result.output.answer)
-    #     judgement = (await judge.run(
-    #         [f'User query: {query}',
-    #          f'B-Cell answer: {b_cell_result.output.answer}',
-    #          f'Provided sources:{b_cell_result.output.sources}'],
-    #         deps=dependencies,
-    #     ))
-    #     b_cell_result.output.answer = judgement.output.adjusted_answer
-    #     criteria = judgement.output.criteria
-    #     criteria = criteria.compliance and \
-    #                criteria.persona_adherence and \
-    #                criteria.correctness
-    #     retries+=1
+    criteria = False
+    retries = 0
+    while not criteria and retries<3:
+        print(b_cell_result.output.answer)
+        judgement = (await judge.run(
+            [f'User query: {query}',
+             f'B-Cell answer: {b_cell_result.output.answer}',
+             f'Provided sources:{b_cell_result.output.sources}'],
+            deps=dependencies,
+        ))
+        b_cell_result.output.answer = judgement.output.adjusted_answer
+        criteria = judgement.output.criteria
+        criteria = criteria.compliance and \
+                   criteria.persona_adherence and \
+                   criteria.correctness
+        retries+=1
     return b_cell_result
 
 async def transcribe(audio: bytes, audio_type='audio/mp3') -> str:
