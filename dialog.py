@@ -42,6 +42,7 @@ class JudgementCriteriaType:
 class JudgementType:
     criteria: JudgementCriteriaType
     adjusted_answer: str
+    sources: List[str] = Field(validation_alias='metadata.source')
 
 @dataclass
 class MainAgentOutputType:
@@ -66,7 +67,7 @@ transcriber = Agent(
 )
 
 judge = Agent(
-    model='openai:gpt-4o',
+    model='openai:gpt-4o-mini',
     deps_type=DialogContext,
     tools=tools,
     output_type=JudgementType,
@@ -85,7 +86,7 @@ judge = Agent(
 )
 
 bcell = Agent(
-    model='openai:gpt-4o-mini',
+    model='openai:gpt-4o',
     deps_type=DialogContext,
     tools=tools,
     output_type=MainAgentOutputType,
@@ -127,6 +128,7 @@ async def interaction(query: str, dependencies: DialogContext, chat_history):
             deps=dependencies,
         ))
         b_cell_result.output.answer = judgement.output.adjusted_answer
+        b_cell_result.output.sources = judgement.output.sources
         criteria = judgement.output.criteria
         criteria = criteria.compliance and \
                    criteria.persona_adherence and \
