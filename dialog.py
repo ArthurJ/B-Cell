@@ -2,7 +2,7 @@ import asyncio
 import json
 
 from dataclasses import dataclass
-from typing import List
+from typing import List, Optional
 
 import logfire
 from dotenv import load_dotenv
@@ -29,8 +29,18 @@ class DialogContext:
     system_prompt: str
 
 @dataclass
-class JudgeOutputType:
-    critique: str
+class JudgementCriteriaType:
+    compliance: bool
+    compliance_short_critique: Optional[str]
+    persona_adherence: bool
+    persona_adherence_short_critique: Optional[str]
+    correctness: bool
+    correctness_short_critique: Optional[str]
+    completeness: bool
+
+@dataclass
+class JudgementType:
+    criteria: JudgementCriteriaType
     adjusted_answer: str
 
 @dataclass
@@ -59,7 +69,7 @@ judge = Agent(
     model='openai:gpt-4o',
     deps_type=DialogContext,
     tools=tools,
-    output_type=JudgeOutputType,
+    output_type=JudgementType,
     retries=3,
     instrument=True,
     system_prompt='You are the Judge agent, your responsibility is to evaluate the answer of another agent (B-Cell), '
@@ -68,7 +78,9 @@ judge = Agent(
                  Considering the **persona**, the **correctness** and **completeness** of the response, 
                  and **compliance** with the safety rules.
                  You have the same tools and information available to B-Cell agent. 
-                 Please, critique the response and offer a corrected version of it.
+                 Please, define each criteria as True if the answer provided matches it.
+                 You can define completeness as True if the missing information breaks some other criteria.
+                 If necessary, write a corrected version of it.
                  """
 )
 
@@ -104,13 +116,22 @@ async def interaction(query: str, dependencies: DialogContext, chat_history):
         message_history=chat_history,
         deps=dependencies,
     )
-    adjustment = (await judge.run(
-        [f'User query: {query}',
-                    f'B-Cell answer: {b_cell_result.output.answer}',
-                    f'Provided sources:{b_cell_result.output.sources}'],
-        deps=dependencies,
-    )).output.adjusted_answer
-    b_cell_result.output.answer = adjustment
+    criteria = False
+    retries = 0
+    while not criteria and retries<3:
+        print(b_cell_result.output.answer)
+        judgement = (await judge.run(
+            [f'User query: {query}',
+             f'B-Cell answer: {b_cell_result.output.answer}',
+             f'Provided sources:{b_cell_result.output.sources}'],
+            deps=dependencies,
+        ))
+        b_cell_result.output.answer = judgement.output.adjusted_answer
+        criteria = judgement.output.criteria
+        criteria = criteria.compliance and \
+                   criteria.persona_adherence and \
+                   criteria.correctness
+        retries+=1
 
     return b_cell_result
 
