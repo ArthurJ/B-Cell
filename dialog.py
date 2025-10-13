@@ -66,7 +66,7 @@ transcriber = Agent(
 )
 
 judge = Agent(
-    model='openai:gpt-4o-mini',
+    model='openai:gpt-4o',
     deps_type=DialogContext,
     tools=tools,
     output_type=JudgementType,
@@ -85,7 +85,7 @@ judge = Agent(
 )
 
 bcell = Agent(
-    model='openai:gpt-4o',
+    model='openai:gpt-4o-mini',
     deps_type=DialogContext,
     tools=tools,
     output_type=MainAgentOutputType,
