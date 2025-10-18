@@ -3,7 +3,7 @@ import io
 import os
 import wave
 from random import sample
-from typing import Tuple, AsyncGenerator
+from typing import Tuple
 
 from elevenlabs.client import AsyncElevenLabs
 

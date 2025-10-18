@@ -19,22 +19,22 @@ pc = Pinecone(api_key=os.getenv('PINECONE_API_KEY'))
 index = pc.Index(os.getenv('PINECONE_INDEX'))
 vector_store = PineconeVectorStore(embedding=embeddings, index=index)
 
+# pages = []
+# md_paths = glob.glob("Summaries/*.md", recursive=True)
+# for file_path in md_paths:
+#     if Path(file_path).is_file():
+#         print(file_path)
+#         loader = UnstructuredMarkdownLoader(file_path)
+#         for page in loader.lazy_load():
+#             pages.append(page)
+#
+# all_splits = text_splitter.split_documents(pages)
+# print(f"Split blog post into {len(all_splits)} sub-documents.")
+# vector_store.add_documents(documents=all_splits)
+
+
 pages = []
-md_paths = glob.glob("Summaries/**/*.md", recursive=True)
-for file_path in md_paths:
-    if Path(file_path).is_file():
-        print(file_path)
-        loader = UnstructuredMarkdownLoader(file_path)
-        for page in loader.lazy_load():
-            pages.append(page)
-
-all_splits = text_splitter.split_documents(pages)
-print(f"Split blog post into {len(all_splits)} sub-documents.")
-vector_store.add_documents(documents=all_splits)
-
-
-pages = []
-pdf_paths = glob.glob("Originals/**/*.pdf", recursive=True)
+pdf_paths = glob.glob("Originals/Cytokine roles/*.pdf", recursive=True)
 for file_path in pdf_paths:
     if Path(file_path).is_file():
         print(file_path)
