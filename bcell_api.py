@@ -41,6 +41,11 @@ class Chat(BaseModel):
     last_text: str
     sources: Optional[List[str]]
 
+class TextResponse(BaseModel):
+    ai_message: str
+    sources: List[str]
+
+
 claims = json.load(open("knowledge/talvey-claims.json", 'r'))
 prompt= open('system_prompt.md', 'r').read()
 
@@ -94,6 +99,19 @@ async def send_text(chat_id:str, message:str):
 
     return {'ai_message': result.output.answer, 'sources': result.output.sources}
 
+
+@app.get("/chat/v2/text/{chat_id}")
+async def send_text(chat_id:str, message:str) -> TextResponse:
+    if not message:
+        return
+    if chat_id not in chats:
+        raise HTTPException(status_code=404, detail="Chat not found.")
+    chat: Chat = chats[chat_id]
+    message = BeautifulSoup(message, "html.parser").get_text()
+    result = (await interaction(message, chat.deps, chat.history))
+    update_chat(chat, result)
+
+    return TextResponse(ai_message=result.output.answer, sources=result.output.sources)
 
 @app.get("/chat/mixed/{chat_id}")
 @app.get("/chat/v2/mixed/{chat_id}")
@@ -161,10 +179,17 @@ async def download_audio(file_name:str):
 
 
 @app.get("/chat/last-text/{chat_id}")
-@app.get("/chat/v2/last-text/{chat_id}")
 async def get_last_message(chat_id:str):
     if chat_id not in chats:
         raise HTTPException(status_code=404, detail="Chat not found.")
     chat: Chat = chats[chat_id]
     logfire.info(f'Sources used: {chat.sources}')
     return {'ai_message': chat.last_text, 'sources': chat.sources}
+
+@app.get("/chat/v2/last-text/{chat_id}")
+async def get_last_message(chat_id:str)-> TextResponse:
+    if chat_id not in chats:
+        raise HTTPException(status_code=404, detail="Chat not found.")
+    chat: Chat = chats[chat_id]
+    logfire.info(f'Sources used: {chat.sources}')
+    return TextResponse(ai_message= chat.last_text, sources=chat.sources)
