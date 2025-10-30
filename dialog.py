@@ -103,7 +103,7 @@ bcell = Agent(
 
 @bcell.system_prompt
 def add_claims(ctx: RunContext[DialogContext]) -> str:
-    return f'Talvey Claims:\n{ctx.deps.talvey_claims}'
+    return f'TALVEY claims:\n{ctx.deps.talvey_claims}'
 
 @bcell.system_prompt
 def add_prompt(ctx: RunContext[DialogContext]) -> str:
@@ -111,7 +111,7 @@ def add_prompt(ctx: RunContext[DialogContext]) -> str:
 
 @judge.system_prompt
 def add_claims(ctx: RunContext[DialogContext]) -> str:
-    return f'Talvey Claims:\n{ctx.deps.talvey_claims}'
+    return f'TALVEY claims:\n{ctx.deps.talvey_claims}'
 
 @judge.system_prompt
 def add_prompt(ctx: RunContext[DialogContext]) -> str:
