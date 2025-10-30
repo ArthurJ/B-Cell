@@ -118,7 +118,7 @@ def add_prompt(ctx: RunContext[DialogContext]) -> str:
 
 
 async def interaction(query: str, dependencies: DialogContext,
-                      chat_history, model=main_model, sec_model=judge_model, passes=3):
+                      chat_history, model=main_model, sec_model=None, passes=3):
     with Timer(initial_text='\nMain model', logger=logfire.info):
         query = (await transcriber.run(query)).output.english_transcription
         b_cell_result = await bcell.run(query, message_history=chat_history, deps=dependencies, model=model)
