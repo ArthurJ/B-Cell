@@ -43,7 +43,7 @@ class Chat(BaseModel):
 
 class TextResponse(BaseModel):
     ai_message: str
-    sources: List[str] = Field(description='Always include references to support your answer.')
+    sources: List[str] = Field(description="**Always** include references to support your answer. That's critical.")
 
 
 claims = json.load(open("knowledge/talvey-claims.json", 'r'))
