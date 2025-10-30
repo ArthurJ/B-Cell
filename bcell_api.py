@@ -13,7 +13,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from secrets import token_hex
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from pydantic_ai.agent import AgentRunResult
 
 from dialog import interaction, tts, transcribe, initial_run, DialogContext, chorus
@@ -43,7 +43,7 @@ class Chat(BaseModel):
 
 class TextResponse(BaseModel):
     ai_message: str
-    sources: List[str]
+    sources: List[str] = Field(description='Always include references to support your answer.')
 
 
 claims = json.load(open("knowledge/talvey-claims.json", 'r'))
