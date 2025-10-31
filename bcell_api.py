@@ -69,7 +69,7 @@ async def save_audios(source_audio, qtd_voices=3):
 def update_chat(chat: Chat, result: TextResponse):
     chat.history = result.all_messages()
     chat.last_text = result.output.answer
-    chat.sources = [PurePath(p).stem if PurePath(p).suffix in ('pdf', 'md') in p else p
+    chat.sources = [PurePath(p).stem if PurePath(p).suffix in ('.pdf', '.md') in p else p
                     for p in set(result.output.sources or [])]
 
 @app.get("/new-chat")
