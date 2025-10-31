@@ -179,6 +179,7 @@ async def chorus(pcm_audio:bytes, qtd_voices=1, play=False, convert=True) -> Lis
         with Timer(initial_text='\nGathering Voices', logger=logfire.info):
             data = await gather_voices(wav_data, qtd_voices=qtd_voices)
             return data
+
     return []
 
 async def initial_run(deps: DialogContext):
