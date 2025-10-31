@@ -1,6 +1,7 @@
 import json
 import os
 from itertools import islice, cycle
+from pathlib import PurePath
 from typing import List, Annotated, Optional
 
 import logfire
@@ -14,7 +15,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from secrets import token_hex
 
 from pydantic import BaseModel, Field
-from pydantic_ai.agent import AgentRunResult
 
 from dialog import interaction, tts, transcribe, initial_run, DialogContext, chorus
 
@@ -69,7 +69,7 @@ async def save_audios(source_audio, qtd_voices=3):
 def update_chat(chat: Chat, result: TextResponse):
     chat.history = result.all_messages()
     chat.last_text = result.output.answer
-    chat.sources = result.output.sources
+    chat.sources = [PurePath(p).name for p in set(result.output.sources)]
 
 @app.get("/new-chat")
 async def new_chat(lang:str='en'):
