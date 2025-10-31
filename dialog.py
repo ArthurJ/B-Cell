@@ -28,7 +28,8 @@ load_dotenv()
 openai_client = OpenAI()
 
 judge_model='openai:gpt-4o'
-main_model='openai:gpt-4o'
+# main_model='openai:gpt-4o'
+main_model='openai:gpt-4.1-nano'
 
 @dataclass
 class DialogContext:
