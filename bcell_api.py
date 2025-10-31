@@ -2,7 +2,7 @@ import json
 import os
 from itertools import islice, cycle
 from pathlib import PurePath
-from typing import List, Annotated, Optional
+from typing import List, Annotated
 
 import logfire
 import tempfile
