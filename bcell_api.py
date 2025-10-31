@@ -39,7 +39,7 @@ class Chat(BaseModel):
     history: List
     deps: DialogContext
     last_text: str
-    sources: Optional[List[str]]
+    sources: List[str]
 
 class TextResponse(BaseModel):
     ai_message: str
@@ -69,7 +69,7 @@ async def save_audios(source_audio, qtd_voices=3):
 def update_chat(chat: Chat, result: TextResponse):
     chat.history = result.all_messages()
     chat.last_text = result.output.answer
-    chat.sources = [PurePath(p).name for p in set(result.output.sources)]
+    chat.sources = [PurePath(p).stem for p in set(result.output.sources or [])]
 
 @app.get("/new-chat")
 async def new_chat(lang:str='en'):
@@ -87,19 +87,6 @@ async def new_chat(lang:str='en'):
 
 
 @app.get("/chat/text/{chat_id}")
-async def send_text(chat_id:str, message:str):
-    if not message:
-        return
-    if chat_id not in chats:
-        raise HTTPException(status_code=404, detail="Chat not found.")
-    chat: Chat = chats[chat_id]
-    message = BeautifulSoup(message, "html.parser").get_text()
-    result = (await interaction(message, chat.deps, chat.history))
-    update_chat(chat, result)
-
-    return {'ai_message': result.output.answer, 'sources': result.output.sources}
-
-
 @app.get("/chat/v2/text/{chat_id}")
 async def send_text(chat_id:str, message:str) -> TextResponse:
     if not message:
@@ -179,13 +166,6 @@ async def download_audio(file_name:str):
 
 
 @app.get("/chat/last-text/{chat_id}")
-async def get_last_message(chat_id:str):
-    if chat_id not in chats:
-        raise HTTPException(status_code=404, detail="Chat not found.")
-    chat: Chat = chats[chat_id]
-    logfire.info(f'Sources used: {chat.sources}')
-    return {'ai_message': chat.last_text, 'sources': chat.sources}
-
 @app.get("/chat/v2/last-text/{chat_id}")
 async def get_last_message(chat_id:str)-> TextResponse:
     if chat_id not in chats:
