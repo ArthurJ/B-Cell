@@ -6,6 +6,7 @@
 *   **Original Abstract:** Of the five immunoglobulin isotypes, immunoglobulin G (IgG) is most abundant in human serum. The four subclasses, IgG1, IgG2, IgG3, and IgG4, which are highly conserved, differ in their constant region, particularly in their hinges and upper CH2 domains. These regions are involved in binding to both IgG-Fc receptors (FcγR) and C1q. As a result, the different subclasses have different effector functions, both in terms of triggering FcγR-expressing cells, resulting in phagocytosis or antibody-dependent cell-mediated cytotoxicity, and activating complement. The Fc-regions also contain a binding epitope for the neonatal Fc receptor (FcRn), responsible for the extended half-life, placental transport, and bidirectional transport of IgG to mucosal surfaces. However, FcRn is also expressed in myeloid cells, where it participates in both phagocytosis and antigen presentation together with classical FcγR and complement. How these properties, IgG-polymorphisms and post-translational modification of the antibodies in the form of glycosylation, affect IgG-function will be the focus of the current review.
 *   **DOI/Reference:** 10.3389/fimmu.2014.00520
 *   **Authors:** Gestur Vidarsson, Gillian Dekkers, and Theo Rispens
+*   **Reference:** Vidarsson G et al. Front Immunol 2014; 5:520.
 
 ---
 

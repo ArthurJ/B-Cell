@@ -6,6 +6,7 @@
 *   **Original Abstract:** Multiple myeloma (MM), a malignancy involving plasma cells, disproportionately affects older adults with an average age of diagnosis of about 70 years. Oftentimes, the therapies used in the treatment of MM are associated with a risk for immunotoxicity, lowering the ability of the immune system to fight off opportunistic infections. This is an important relationship for clinicians to realize as the incidence of opportunistic infections in myeloma patients is increasing. As an example, we present a case of a patient with MM who subsequently developed a cryptococcal infection. Our paper will highlight the key details of the case as well as shed light on the importance of understanding the immunodeficiencies in this patient population. We highlight important aspects of the current literature related to MM and relate them to the associated case.
 *   **DOI/Reference:** https://doi.org/10.14740/wjon1780
 *   **Authors:** Brandon Nightingale, Megan Decker, Robert Ryan, Karolina Kaczmarczyk, Parul Jandir, Trupti Waykole, Remi Ashkar, Gabriella Harmon, Ajay Mathur, Michael Levitt
+*   **Reference:** Nightingale B et al. World J Oncol 2024; 15(3):348–354.
 
 ---
 

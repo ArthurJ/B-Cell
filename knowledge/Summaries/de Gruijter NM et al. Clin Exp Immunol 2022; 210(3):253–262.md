@@ -2,10 +2,11 @@
 
 **ESSENTIAL PAPER INFORMATION**
 
-*   **Original Title:** Cytokine production by human B cells: role in health and autoimmune disease
-*   **Original Abstract:** B cells are classically considered solely as antibody-producing cells driving humoral immune responses to foreign antigens in infections and vaccinations as well as self-antigens in pathological settings such as autoimmunity. However, it has now become clear that B cells can also secrete a vast array of cytokines, which influence both pro- and anti-inflammatory immune responses. Indeed, similarly to T cells, there is significant heterogeneity in cytokine-driven responses by B cells, ranging from the production of pro-inflammatory effector cytokines such as IL-6, through to the release of immunosuppressive cytokines such as IL-10. In this review, focusing on human B cells, we summarize the key findings that have revealed that cytokine-producing B cell subsets have critical functions in healthy immune responses and contribute to the pathophysiology of autoimmune diseases.
-*   **DOI/Reference:** https://doi.org/10.1093/cei/uxac090
-*   **Authors:** Nina M. de Gruijter, Bethany Jebson, Elizabeth C. Rosser
+* **Original Title:** Cytokine production by human B cells: role in health and autoimmune disease
+* **Original Abstract:** B cells are classically considered solely as antibody-producing cells driving humoral immune responses to foreign antigens in infections and vaccinations as well as self-antigens in pathological settings such as autoimmunity. However, it has now become clear that B cells can also secrete a vast array of cytokines, which influence both pro- and anti-inflammatory immune responses. Indeed, similarly to T cells, there is significant heterogeneity in cytokine-driven responses by B cells, ranging from the production of pro-inflammatory effector cytokines such as IL-6, through to the release of immunosuppressive cytokines such as IL-10. In this review, focusing on human B cells, we summarize the key findings that have revealed that cytokine-producing B cell subsets have critical functions in healthy immune responses and contribute to the pathophysiology of autoimmune diseases.
+* **DOI/Reference:** https://doi.org/10.1093/cei/uxac090
+* **Authors:** Nina M. de Gruijter, Bethany Jebson, Elizabeth C. Rosser
+* **Reference:** de Gruijter NM et al. Clin Exp Immunol 2022; 210(3):253–262.
 
 ---
 

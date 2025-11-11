@@ -6,6 +6,7 @@
 *   **Original Abstract:** Objectives: This study aimed to provide real-world data on the characteristics and treatment of patients with multiple myeloma (MM) at the time of death. Methods: The study was a retrospective patient chart review across France, Germany, Italy, Spain and the UK during 2016, and included patients who had died in the 3 months before the index date. Results: Data from 786 patients were reviewed. At the time of death, 37% of patients were receiving active treatment, 12% were in a treatment-free interval and 51% were receiving only supportive care. Death before and during active first-line treatment was not uncommon (6% and 24% of patients, respectively) but these deaths were often not solely due to disease progression; factors such as renal failure and infection frequently played a role (in 30% and 20% of patients at first-line, respectively). Most deaths at later lines were due to progressive disease. Cox model results suggested that early deaths were associated with advanced disease stage, high-risk cytogenetics and poor response and relapse profiles. Conclusions: These real-world data could be used to help develop strategies for improving survival in patients with MM and to support management tailored to the stage of disease.
 *   **DOI/Reference:** 10.1111/ejh.13264
 *   **Authors:** Mohamad Mohty, Michele Cavo, Leah Fink, Sebastian Gonzalez-McQuire, Henri Leleu, Maria-Victoria Mateos, Marc S. Raab, Paul Schoen, Kwee Yong
+*   **Reference:** Mohty M et al. Eur J Haematol 2019; 103(2):107–115.
 
 ---
 

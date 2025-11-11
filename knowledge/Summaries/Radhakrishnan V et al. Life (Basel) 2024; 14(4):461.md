@@ -6,6 +6,7 @@
 *   **Original Abstract:** The clinical signs of multiple myeloma, a plasma cell (PC) dyscrasia, include bone loss, renal damage, and paraproteinemia. It can be defined as the uncontrolled growth of malignant PCs within the bone marrow. The distinctive bone marrow milieu that regulates the progression of myeloma disease involves interactions between plasma and stromal cells, and myeloid and lymphoid cells. These cells affect the immune system independently or because of a complicated web of interconnections, which promotes disease development and immune evasion. Due to the importance of these factors in the onset of disease, various therapeutic strategies have been created that either target or improve the immunological processes that influence disease progression. The immune system has a role in the mechanism of action of multiple myeloma treatments. The main contributions of immune cells to the bone marrow microenvironment, as well as how they interact and how immune regulation might lead to therapeutic effects, are covered in this study.
 *   **DOI/Reference:** https://doi.org/10.3390/life14040461
 *   **Authors:** Vijay Radhakrishnan, Upendarrao Golla and Avinash Kundadka Kudva
+*   **Reference:** Radhakrishnan V et al. Life (Basel) 2024; 14(4):461.
 
 ---
 

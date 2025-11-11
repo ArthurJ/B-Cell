@@ -9,6 +9,7 @@
     We report efficacy and ongoing safety from MonumenTAL-1 at an extended mFU of 30-38 months, the longest mFU for any anti-GPRC5D agent"
 *   **DOI/Reference:** Poster presentation. Presented by NWCJ van de Donk at the American Society of Clinical Oncology (ASCO) Annual Meeting; May 30-June 3, 2025; Chicago, IL, USA & Virtual.
 *   **Authors:** Leo Rasche, Carolina Schinke, Cyrille Touzeau, Monique C Minnema, Niels WCJ van de Donk, Paula Rodríguez-Otero, María-Victoria Mateos, Jing Christine Ye, Chalmer Tomlinson, Deeksha Vishwamitra, Indrajeet Singh, Xiang Qin, Michela Campagna, Tara J Masterson, Veronique Vreys, Bonnie W Lau, Jaszianne Tolbert, Thomas Renaud, Christoph Heuck, Ajai Chari
+*   **Reference:** Rasche L et al. Presented at: American Society of Clinical Oncology (ASCO) Congress; 30 May–3 June 2025; Chicago, IL (Poster no. 96).
 
 ---
 

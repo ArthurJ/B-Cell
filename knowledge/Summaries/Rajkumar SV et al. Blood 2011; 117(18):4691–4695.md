@@ -6,6 +6,7 @@
 *   **Original Abstract:** It is essential that there be consistency in the conduct, analysis, and reporting of clinical trial results in myeloma. The goal of the International Myeloma Workshop Consensus Panel 1 was to develop a set of guidelines for the uniform reporting of clinical trial results in myeloma. This paper provides a summary of the current response criteria in myeloma, detailed definitions for patient populations, lines of therapy, and specific endpoints. We propose that future clinical trials in myeloma follow the guidelines for reporting results proposed in this manuscript.
 *   **DOI/Reference:** 10.1182/blood-2010-10-299487
 *   **Authors:** S. Vincent Rajkumar, Jean-Luc Harousseau, Brian Durie, Kenneth C. Anderson, Meletios Dimopoulos, Robert Kyle, Joan Blade, Paul Richardson, Robert Orlowski, David Siegel, Sundar Jagannath, Thierry Facon, Hervé Avet-Loiseau, Sagar Lonial, Antonio Palumbo, Jeffrey Zonder, Heinz Ludwig, David Vesole, Orhan Sezer, Nikhil C. Munshi, and Jesus San Miguel, on behalf of the International Myeloma Workshop Consensus Panel 1
+*   **Reference:** Rajkumar SV et al. Blood 2011; 117(18):4691–4695.
 
 ---
 

@@ -6,6 +6,7 @@
 *   **Original Abstract (verbatim):** Interleukin 6 (IL-6), promptly and transiently produced in response to infections and tissue injuries, contributes to host defense through the stimulation of acute phase responses, hematopoiesis, and immune reactions. Although its expression is strictly controlled by transcriptional and posttranscriptional mechanisms, dysregulated continual synthesis of IL-6 plays a pathological effect on chronic inflammation and autoimmunity. For this reason, tocilizumab, a humanized anti-IL-6 receptor antibody was developed. Various clinical trials have since shown the exceptional efficacy of tocilizumab, which resulted in its approval for the treatment of rheumatoid arthritis and juvenile idiopathic arthritis. Moreover, tocilizumab is expected to be effective for other intractable immune-mediated diseases. In this context, the mechanism for the continual synthesis of IL-6 needs to be elucidated to facilitate the development of more specific therapeutic approaches and analysis of the pathogenesis of specific diseases.
 *   **DOI/Reference:** doi: 10.1101/cshperspect.a016295
 *   **Authors:** Toshio Tanaka, Masashi Narazaki, and Tadamitsu Kishimoto
+*   **Reference:** Tanaka T et al. Cold Spring Harb Perspect Biol 2014; 6(10):a016295.
 
 ---
 

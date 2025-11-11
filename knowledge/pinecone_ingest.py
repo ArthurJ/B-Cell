@@ -19,32 +19,38 @@ pc = Pinecone(api_key=os.getenv('PINECONE_API_KEY'))
 index = pc.Index(os.getenv('PINECONE_INDEX'))
 vector_store = PineconeVectorStore(embedding=embeddings, index=index)
 
-# pages = []
-# md_paths = glob.glob("Summaries/*.md", recursive=True)
-# for file_path in md_paths:
-#     if Path(file_path).is_file():
-#         print(file_path)
-#         loader = UnstructuredMarkdownLoader(file_path)
-#         for page in loader.lazy_load():
-#             pages.append(page)
-#
-# all_splits = text_splitter.split_documents(pages)
-# print(f"Split blog post into {len(all_splits)} sub-documents.")
-# vector_store.add_documents(documents=all_splits)
-
-
 pages = []
-pdf_paths = glob.glob("Originals/Cytokine roles/*.pdf", recursive=True)
-for file_path in pdf_paths:
+md_paths = glob.glob("Summaries/*.md", recursive=True)
+for file_path in md_paths:
     if Path(file_path).is_file():
         print(file_path)
-        loader = PyPDFLoader(file_path)
+        loader = UnstructuredMarkdownLoader(file_path)
         for page in loader.lazy_load():
             pages.append(page)
 
 all_splits = text_splitter.split_documents(pages)
-print(f"Split blog post into {len(all_splits)} sub-documents.")
+print(f"Split summaries into {len(all_splits)} sub-documents.")
 vector_store.add_documents(documents=all_splits)
+
+
+for dir in Path('Originals').iterdir():
+    pages = []
+    pdf_paths = glob.glob(f"{dir}/*.pdf", recursive=True)
+    for file_path in pdf_paths:
+        if Path(file_path).is_file():
+            print(file_path)
+            loader = PyPDFLoader(file_path)
+            for page in loader.lazy_load():
+                pages.append(page)
+        if 'Cytokine' in dir.name:
+            all_splits = text_splitter.split_documents(pages)
+            print(f"Split {file_path} into {len(all_splits)} sub-documents.\n")
+            vector_store.add_documents(documents=all_splits)
+            pages=[]
+
+    all_splits = text_splitter.split_documents(pages)
+    print(f"\nSplit {dir} documents into {len(all_splits)} sub-documents.\n")
+    vector_store.add_documents(documents=all_splits)
 
 # if __name__=='__main__':
 #

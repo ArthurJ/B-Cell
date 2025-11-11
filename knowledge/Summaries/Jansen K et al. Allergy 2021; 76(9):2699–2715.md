@@ -6,6 +6,7 @@
 *   **Original Abstract:** B cells play a central role in the immune system through the production of antibodies. During the past two decades, it has become increasingly clear that B cells also have the capacity to regulate immune responses through mechanisms that extend beyond antibody production. Several types of human and murine regulatory B cells have been reported that suppress inflammatory responses in autoimmune disease, allergy, infection, transplantation, and cancer. Key suppressive molecules associated with regulatory B-cell function include the cytokines IL-10, IL-35, and TGF-β as well as cell membrane-bound molecules such as programmed death-ligand 1, CD39, CD73, and aryl hydrocarbon receptor. Regulatory B cells can be induced by a range of different stimuli, including microbial products such as TLR4 or TLR9 ligands, inflammatory cytokines such as IL-6, IL-1β, and IFN-α, as well as CD40 ligation. This review provides an overview of our current knowledge on regulatory B cells. We discuss different types of regulatory B cells, the mechanisms through which they exert their regulatory functions, factors that lead to induction of regulatory B cells and their role in the alteration of inflammatory responses in different diseases.
 *   **DOI/Reference:** 10.1111/all.14763
 *   **Authors:** Kirstin Jansen, Lacin Cevhertas, Siyuan Ma, Pattraporn Satitsuksanoa, Mübeccel Akdis, Willem van de Veen
+*   **Reference:** Jansen K et al. Allergy 2021; 76(9):2699–2715.
 
 ---
 

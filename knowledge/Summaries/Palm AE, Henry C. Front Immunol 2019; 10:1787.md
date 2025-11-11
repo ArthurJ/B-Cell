@@ -6,6 +6,7 @@
 *   **Original Abstract:** The success of vaccines is dependent on the generation and maintenance of immunological memory. The immune system can remember previously encountered pathogens, and memory B and T cells are critical in secondary responses to infection. Studies in mice have helped to understand how different memory B cell populations are generated following antigen exposure and how affinity for the antigen is determinant to B cell fate. Additionally, such studies were fundamental in defining memory B cell niches and how B cells respond following subsequent exposure with the same antigen. On the other hand, human studies are essential to the development of better, newer vaccines but sometimes limited by the difficulty to access primary and secondary lymphoid organs. However, work using human influenza and HIV virus infection and/or immunization in particular has significantly advanced today's understanding of memory B cells. This review will focus on the generation, function, and longevity of B-cell mediated immunological memory (memory B cells and plasma cells) in response to infection and vaccination both in mice and in humans.
 *   **DOI/Reference:** 10.3389/fimmu.2019.01787
 *   **Authors:** Anna-Karin E. Palm and Carole Henry
+*   **Reference:** Palm AE, Henry C. Front Immunol 2019; 10:1787.
 
 ---
 

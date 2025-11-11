@@ -6,6 +6,7 @@
 *   **Original Abstract:** Receptors recognizing the Fc-part of immunoglobulins (FcR) are important in the engagement of phagocytes with opsonized micro-organisms, but they also play a major role in the pathogenesis of chronic inflammatory diseases. Different FcRs are specifically recognizing and binding the different classes of immunoglobulins, transmitting different signals into the cell. The function of IgG (FcγR's) and IgA (FcαR) recognizing receptors is controlled by cellular signals evoked by activation of heterologous receptors in a process generally referred to as inside-out control. This concept is clearly described for the regulation of integrin receptors. Inside-out control can be achieved at different levels by modulation of: (i) receptor affinity, (ii) receptor avidity/valency, (iii) interaction with signaling chains, (iv) interaction with other receptors and (v) localization in functionally different membrane domains. The inside-out control of FcRs is an interesting target for novel therapy by therapeutical antibodies as it can potentiate or decrease the functionality of the response to the antibodies depending on the mechanisms of the diseases they are applied for.
 *   **DOI/Reference:** 10.3389/fimmu.2019.00544
 *   **Authors:** Leo Koenderman
+*   **Reference:** Koenderman L. Front Immunol 2019; 10:544.
 
 ---
 

@@ -6,6 +6,7 @@
 *   **Original Abstract:** Although treatment advances over recent decades have significantly improved survival of patients with multiple myeloma, there is still an unmet medical need for more effective treatments. In this study, we identified G-protein-coupled receptor family C group 5 member D (GPRC5D) expression on the surface of malignant cells involved in multiple myeloma, but except for plasma cells and B cells, not at appreciable levels on normal hematopoietic cells and bone marrow progenitors, including hematopoietic stem cells. In addition, we constructed IgG-based anti-GPRC5D/CD3 bispecific T-cell-redirecting antibodies (GPRC5D TRAB), which suppressed the tumor growth of GPRC5D-positive myeloma cells through the activation of T cells in vitro and in vivo in xenograft models. Collectively, these findings suggest that GPRC5D is an antigen specific to multiple myeloma and a potential target of TRAB therapy.
 *   **DOI/Reference:** doi: 10.1158/1535-7163.MCT-18-1216
 *   **Authors:** Tatsushi Kodama, Yu Kochi, Waka Nakai, Hideaki Mizuno, Takeshi Baba, Kiyoshi Habu, Noriaki Sawada, Hiroyuki Tsunoda, Takahiro Shima, Kohta Miyawaki, Yoshikane Kikushige, Yasuo Mori, Toshihiro Miyamoto, Takahiro Maeda, and Koichi Akashi
+*   **Reference:** Kodama T et al. Mol Cancer Ther 2019; 18(9):1555–1564.
 
 ---
 

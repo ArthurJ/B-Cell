@@ -163,7 +163,7 @@ async def tts(text:str) -> bytes:
                 },
                 {
                     "role": "user",
-                    "content": f'Say: {text}'
+                    "content": f'Say: {text.replace("TECVAYLI", "TEC-VAY-LI").replace("GPRC5D", "G P R C 5 D")}'
                 }
             ]
         )

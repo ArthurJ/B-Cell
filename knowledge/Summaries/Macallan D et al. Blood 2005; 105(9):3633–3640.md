@@ -6,7 +6,7 @@
 *   **Original Abstract:** Information about the kinetic behavior and lifespan of lymphocytes is crucial to understanding the mechanisms that regulate processes such as immunologic memory. We have used in vivo labeling of dividing cells with 6,6-²H₂-glucose, combined with cell sorting and gas-chromatography-mass spectrometry for deuterium enrichment, in order to analyze the kinetics of human total, naive, or memory B lymphocytes, separated from peripheral blood using monoclonal antibodies. We show that total blood B cells of young adults divide at an average rate of 1.9% (±1.0%) per day and at a similar though slightly slower rate, 1.5% (±1.3%) per day, in the elderly. Separation of naive and memory B cells according to expression of CD27 indicates that naive peripheral blood B cells divide slowly (0.46% per day), while memory cells proliferate more rapidly (2.66% per day). These data are compatible with the view that B-cell memory may be maintained by clones of proliferating B cells.
 *   **DOI/Reference:** 10.1182/blood-2004-09-3740
 *   **Authors:** Derek C. Macallan, Diana L. Wallace, Yan Zhang, Hala Ghattas, Becca Asquith, Catherine de Lara, Andrew Worth, George Panayiotakopoulos, George E. Griffin, David F. Tough, and Peter C. L. Beverley
-
+*   **Reference:** Macallan D et al. Blood 2005; 105(9):3633–3640.
 ---
 
 ### 1. OVERVIEW
