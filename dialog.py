@@ -148,6 +148,7 @@ async def transcribe(audio: bytes, audio_type='audio/mp3') -> str:
     return (await transcriber.run([BinaryContent(audio, media_type=audio_type)])).output.english_transcription
 
 
+
 async def tts(text:str) -> bytes:
     with Timer(initial_text='\nText-To-Speech', logger=logfire.info):
         completion = openai_client.chat.completions.create(
