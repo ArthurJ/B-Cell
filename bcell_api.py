@@ -43,7 +43,7 @@ class Chat(BaseModel):
 
 class TextResponse(BaseModel):
     ai_message: str
-    sources: List[str] = Field(description="List of sources used to write the answer. **Always** include references to support your answer. That's critical.")
+    sources: List[str]
 
 
 claims = json.load(open("knowledge/talvey-claims.json", 'r'))
@@ -71,7 +71,8 @@ def update_chat(chat: Chat, result: TextResponse):
     chat.last_text = result.output.answer
     chat.sources = [PurePath(p).stem + '.'
                     if PurePath(p).suffix in ('.md', '.pdf') else PurePath(p).name + '.'
-                    for p in set(result.output.sources or [])]
+                    for p in set(result.output.sources or [])
+                    if PurePath(p).stem or PurePath(p).name ]
 
 @app.get("/new-chat")
 async def new_chat(lang:str='en'):

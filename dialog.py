@@ -53,8 +53,12 @@ class JudgementType:
 
 @dataclass
 class MainAgentOutputType:
-    answer: str
-    sources: List[str] = Field(description='List of citations/sources. Cannot be empty!' ,validation_alias='metadata.source')
+    sources: List[str] = Field(description='List of sources used to write the answer. '
+                                           'Always support your answers with relevant sources.'
+                                           "That's critical, the answer **must** have at least one valid (and not null) source."
+                                           'If a question seems simple, expand the answer with depth and context that require citations.'
+                               ,validation_alias='metadata.source')
+    answer: str = Field(description="The answer to the user's message.")
 
 @dataclass
 class TranscriberOutputType:
@@ -103,7 +107,7 @@ bcell = Agent(
 
 @bcell.system_prompt
 def add_claims(ctx: RunContext[DialogContext]) -> str:
-    return f'TALVEY claims:\n{ctx.deps.talvey_claims}'
+    return f'TALVEY SmPC (EU), 2025:\n{ctx.deps.talvey_claims}'
 
 @bcell.system_prompt
 def add_prompt(ctx: RunContext[DialogContext]) -> str:
@@ -111,7 +115,7 @@ def add_prompt(ctx: RunContext[DialogContext]) -> str:
 
 @judge.system_prompt
 def add_claims(ctx: RunContext[DialogContext]) -> str:
-    return f'TALVEY claims:\n{ctx.deps.talvey_claims}'
+    return f'TALVEY SmPC (EU), 2025:\n{ctx.deps.talvey_claims}'
 
 @judge.system_prompt
 def add_prompt(ctx: RunContext[DialogContext]) -> str:
