@@ -54,7 +54,7 @@ class JudgementType:
 @dataclass
 class MainAgentOutputType:
     answer: str
-    sources: List[str] = Field(validation_alias='metadata.source')
+    sources: List[str] = Field(description='List of citations/sources. Cannot be empty!' ,validation_alias='metadata.source')
 
 @dataclass
 class TranscriberOutputType:
