@@ -8,7 +8,7 @@ from typing import List, Optional
 
 import logfire
 from dotenv import load_dotenv
-from pydantic import Field
+from pydantic import Field, BaseModel, conlist
 from pydantic_ai import Agent, RunContext, BinaryContent
 
 from codetiming import Timer
@@ -51,14 +51,14 @@ class JudgementType:
     adjusted_answer: str
     sources: List[str] = Field(validation_alias='metadata.source')
 
-@dataclass
-class MainAgentOutputType:
-    sources: List[str] = Field(description='List of sources used to write the answer. '
-                                           'Always support your answers with relevant sources.'
-                                           "That's critical, the answer **must** have at least one valid (and not null) source."
-                                           'If a question seems simple, expand the answer with depth and context that require citations.'
-                               ,validation_alias='metadata.source')
-    answer: str = Field(description="The answer to the user's message.")
+class MainAgentOutputType(BaseModel):
+    answer: str = Field(description="The answer to the user's message. "
+                                    '**Always** support your answers with relevant sources.'
+                                    "If a question seems too simple, expand the answer with depth and context that require citations.")
+    sources: conlist(str, min_length=1) = Field(description='List of sources used to write the answer. '
+                                                            "That's critical, the answer **must** have at least one valid (and not null) source. "
+                                                ,validation_alias='metadata.source')
+    is_source_relevant: bool = Field(description='Whether or not the given sources are relevant to the user learn more about the question.')
 
 @dataclass
 class TranscriberOutputType:
