@@ -69,9 +69,10 @@ async def save_audios(source_audio, qtd_voices=3):
 def update_chat(chat: Chat, result: TextResponse):
     chat.history = result.all_messages()
     chat.last_text = result.output.answer
-    chat.sources = list(set([PurePath(p).stem + '.'
-                    for p in set(result.output.sources or [])
-                    if result.output.is_source_relevant]))
+    chat.sources = list(
+        set([(PurePath(p).stem + '.').replace('..','.')
+             for p in set(result.output.sources or [])
+             if result.output.is_source_relevant]))
 
 @app.get("/new-chat")
 async def new_chat(lang:str='en'):
@@ -173,5 +174,5 @@ async def get_last_message(chat_id:str)-> TextResponse:
     if chat_id not in chats:
         raise HTTPException(status_code=404, detail="Chat not found.")
     chat: Chat = chats[chat_id]
-    logfire.info(f'Sources used: {chat.sources}')
+    # logfire.info(f'Sources used: {chat.sources}')
     return TextResponse(ai_message= chat.last_text, sources=chat.sources)

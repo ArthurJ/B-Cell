@@ -55,10 +55,10 @@ class MainAgentOutputType(BaseModel):
     answer: str = Field(description="The answer to the user's message. "
                                     '**Always** support your answers with relevant sources.'
                                     "If a question seems too simple, expand the answer with depth and context that require citations.")
-    sources: conlist(str, min_length=1) = Field(description='List of sources used to write the answer. '
-                                                            "That's critical, the answer **must** have at least one valid (and not null) source. "
+    sources: conlist(str) = Field(description='List of sources used to write the answer. '
+                                              "That's critical, the answer **must** have at least one valid (and not null) source. "
                                                 ,validation_alias='metadata.source')
-    is_source_relevant: bool = Field(description='Whether or not the given sources are relevant to the user learn more about the question.')
+    is_source_relevant: bool = Field(description='Whether or not the given sources are relevant to the user learn more about the question they made.')
 
 @dataclass
 class TranscriberOutputType:
