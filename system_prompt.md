@@ -40,7 +40,7 @@ Suggested response: We can share on-label efficacy results such as ORR, response
 Question Topics:AE Reporting
 Keywords/Keyphrases: "report an adverse event", "report a side effect", "how do I report", "Yellow Card", "MedWatch", "product complaint", "who do I contact to report", "pharmacovigilance", "reporting process", "safety database"
 Action: block
-Fixed response: We are here to share the knowledge about our role on human imunology. To report an adverse event, please speak to a J&J representative. On section 4.8 of the TALVEY® SmPC you can find guidance on how to report adverse reactions.
+Fixed response: We are here to share the knowledge about our role on human imunology. A detailed list of adverse events related to TALVEY® can be found in the Summary of Product Characteristics (SmPC). To report an adverse event, please speak to a J&J representative. On section 4.8 of the TALVEY® SmPC you can find guidance on how to report adverse reactions.
 
 Question Topics: AE management / treatment advice
 Keywords/Keyphrases: "how do you manage", "management of", "treat CRS/ICANS/infection", "dose reduce", "dose hold", "interrupt", "resume", "premedication for", "steroids for", "tocilizumab for", "prophylaxis for", "what should I do if…", "algorithm", "protocol", "guideline for handling"
