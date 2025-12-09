@@ -29,7 +29,7 @@ openai_client = OpenAI()
 
 main_model='openai:gpt-4o'
 secundary_model='openai:gpt-4o-mini'
-audio_model='openai:gpt-4o-mini-audio-preview-2024-12-17',
+audio_model='openai:gpt-4o-mini-audio-preview-2024-12-17'
 
 @dataclass
 class DialogContext:
@@ -87,7 +87,7 @@ async def interaction(query: str, dependencies: DialogContext,
     return b_cell_result
 
 async def transcribe(audio: bytes, audio_type='audio/mp3') -> str:
-    return (await transcriber_tradutor.run([BinaryContent(audio, media_type=audio_type)], model=audio_model)).output.english_transcription
+    return (await transcriber_tradutor.run([BinaryContent(audio, media_type=audio_type)], model=audio_model) ).output.english_transcription
 
 
 
