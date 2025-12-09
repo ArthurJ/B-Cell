@@ -67,7 +67,7 @@ class TranscriberOutputType:
     english_transcription: str
 
 transcriber = Agent(
-    model='openai:gpt-4o-mini',
+    model='google-gla:gemini-2.5-flash',
     retries=3,
     instrument=True,
     output_type=TranscriberOutputType,
