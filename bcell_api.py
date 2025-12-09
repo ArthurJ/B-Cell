@@ -144,7 +144,7 @@ async def send_audio(chat_id:str,
     finally:
         audio.file.close()
 
-    transcription = await transcribe(contents, audio_type=f'audio/{suffix}')
+    transcription = await transcribe(contents, audio_type=audio.content_type)
     result = (await interaction(transcription, chat.deps, chat.history))
     update_chat(chat, result)
 

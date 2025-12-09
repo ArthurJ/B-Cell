@@ -27,29 +27,14 @@ logfire.instrument_openai()
 load_dotenv()
 openai_client = OpenAI()
 
-judge_model='openai:gpt-4o'
 main_model='openai:gpt-4o'
+secundary_model='openai:gpt-4o-mini'
+audio_model='openai:gpt-4o-mini-audio-preview-2024-12-17',
 
 @dataclass
 class DialogContext:
     talvey_claims: str
     system_prompt: str
-
-@dataclass
-class JudgementCriteriaType:
-    compliance: bool
-    compliance_short_critique: Optional[str]
-    persona_adherence: bool
-    persona_adherence_short_critique: Optional[str]
-    correctness: bool
-    correctness_short_critique: Optional[str]
-    completeness: bool
-
-@dataclass
-class JudgementType:
-    criteria: JudgementCriteriaType
-    adjusted_answer: str
-    sources: List[str] = Field(validation_alias='metadata.source')
 
 class MainAgentOutputType(BaseModel):
     answer: str = Field(description="The answer to the user's message. ")
@@ -66,8 +51,7 @@ class TranscriberOutputType:
     language: str
     english_transcription: str
 
-transcriber = Agent(
-    model='google-gla:gemini-2.5-flash',
+transcriber_tradutor = Agent(
     retries=3,
     instrument=True,
     output_type=TranscriberOutputType,
@@ -75,25 +59,6 @@ transcriber = Agent(
                  "Some of the queries you'll receive are questions, treat it as any other sentence:"
                  'Transcribe, translating to english if necessary.'
                  'Your only jobs is to transcribe and translate, nothing else.'
-)
-
-judge = Agent(
-    model=judge_model,
-    deps_type=DialogContext,
-    tools=tools,
-    output_type=JudgementType,
-    retries=3,
-    instrument=True,
-    system_prompt='You are the Judge agent, your responsibility is to evaluate the answer of another agent (B-Cell), '
-                  'and adjust it\'s answer to ensure that it is sticking with the rules and standards provided.',
-    instructions="""
-                 Considering the **persona**, the **correctness** and **completeness** of the response, 
-                 and **compliance** with the safety rules.
-                 You have the same tools and information available to B-Cell agent. 
-                 Please, define each criteria as True if the answer provided matches it.
-                 You can define completeness as True if the missing information breaks some other criteria.
-                 If necessary, write a corrected version of it.
-                 """
 )
 
 bcell = Agent(
@@ -113,43 +78,16 @@ def add_claims(ctx: RunContext[DialogContext]) -> str:
 def add_prompt(ctx: RunContext[DialogContext]) -> str:
     return f'Your prompt:\n{ctx.deps.system_prompt}'
 
-@judge.system_prompt
-def add_claims(ctx: RunContext[DialogContext]) -> str:
-    return f'TALVEY SmPC (EU), 2025:\n{ctx.deps.talvey_claims}'
-
-@judge.system_prompt
-def add_prompt(ctx: RunContext[DialogContext]) -> str:
-    return f'B-Cells prompt:\n{ctx.deps.system_prompt}'
-
-
 async def interaction(query: str, dependencies: DialogContext,
-                      chat_history, model=main_model, sec_model=None, passes=3):
+                      chat_history, model=main_model):
     with Timer(initial_text='\nMain model', logger=logfire.info):
-        query = (await transcriber.run(query)).output.english_transcription
+        query = (await transcriber_tradutor.run(query, model=secundary_model)).output.english_transcription
         b_cell_result = await bcell.run(query, message_history=chat_history, deps=dependencies, model=model)
 
-    if sec_model:
-        with Timer(initial_text='\nJudge model', logger=logfire.info):
-            criteria = False
-            retries = 0
-            while not criteria and retries<passes:
-                judgement = (await judge.run(
-                    [f'User query: {query}',
-                     f'B-Cell answer: {b_cell_result.output.answer}',
-                     f'Provided sources:{b_cell_result.output.sources}'],
-                    deps=dependencies,
-                    model=sec_model
-                ))
-                b_cell_result.output.answer = judgement.output.adjusted_answer
-                b_cell_result.output.sources = judgement.output.sources
-                criteria = judgement.output.criteria
-                criteria = criteria.compliance and \
-                           criteria.correctness
-                retries+=1
     return b_cell_result
 
 async def transcribe(audio: bytes, audio_type='audio/mp3') -> str:
-    return (await transcriber.run([BinaryContent(audio, media_type=audio_type)])).output.english_transcription
+    return (await transcriber_tradutor.run([BinaryContent(audio, media_type=audio_type)], model=audio_model)).output.english_transcription
 
 
 
@@ -198,9 +136,9 @@ def initial_run_sync(deps: DialogContext):
     loop = asyncio.get_event_loop()
     return loop.run_until_complete(initial_run(deps))
 
-def interaction_sync(query, dependencies: DialogContext, chat_history, model, sec_model, passes):
+def interaction_sync(query, dependencies: DialogContext, chat_history, model):
     loop = asyncio.get_event_loop()
-    return loop.run_until_complete(interaction(query, dependencies, chat_history, model, sec_model, passes))
+    return loop.run_until_complete(interaction(query, dependencies, chat_history, model))
 
 if __name__ == '__main__':
     # loop = asyncio.get_event_loop()
@@ -220,7 +158,7 @@ if __name__ == '__main__':
     while True:
         query_input = input('User: ')
         print()
-        result = interaction_sync(query_input, deps, history, model=main_model, sec_model=judge_model, passes=3)
+        result = interaction_sync(query_input, deps, history, model=main_model)
         history = result.all_messages()
         print(result.all_messages()[-1])
         print(result.output.answer)
