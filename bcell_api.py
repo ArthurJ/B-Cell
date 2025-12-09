@@ -125,7 +125,7 @@ async def send_mixed(chat_id: str, message: str):
 @app.post("/chat/v2/audio/{chat_id}")
 async def send_audio(chat_id:str,
                      audio: Annotated[UploadFile,
-                     File(description="filetypes: flac, m4a, mp3, wav, webm")]=None):
+                     File(description="filetypes: mp3, wav")]=None):
     if not audio:
         return
     if chat_id not in chats:
