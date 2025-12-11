@@ -37,7 +37,7 @@ class DialogContext:
     system_prompt: str
 
 class MainAgentOutputType(BaseModel):
-    answer: str = Field(description="The answer to the user's message. ")
+    answer: str = Field(description="The answer to the user's message. Do not rely on your prior knowledge to write your answers, justify it with the `knowledge_retrieve` tool.")
     sources: conlist(str) = Field(description='List of sources used to write the answer.'
                                               '**Always** support your answers with relevant sources in the sources field.'
                                               "If a question seems too simple, expand the answer with depth and context that require citations."
