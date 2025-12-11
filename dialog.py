@@ -37,12 +37,12 @@ class DialogContext:
     system_prompt: str
 
 class MainAgentOutputType(BaseModel):
-    answer: str = Field(description="The answer to the user's message. Do not rely on your prior knowledge to write your answers, justify it with the `knowledge_retrieve` tool.")
+    answer: str = Field(description="The answer to the user's message. Do not rely on your prior knowledge to write your answers; always justify it with the `knowledge_retrieve` tool.")
     sources: conlist(str) = Field(description='List of sources used to write the answer.'
                                               '**Always** support your answers with relevant sources in the sources field.'
                                               "If a question seems too simple, expand the answer with depth and context that require citations."
                                               "That's critical, the answer **must** have at least one valid (and not null) source. "
-                                                ,validation_alias='metadata.source')
+                                  ,validation_alias='metadata.source')
     is_source_relevant: bool = Field(description='Whether or not the given sources are relevant to the user learn more about the question they made.')
 
 @dataclass
