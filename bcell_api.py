@@ -65,14 +65,21 @@ async def save_audios(source_audio, qtd_voices=3):
             audio_list.append(audio_file.name.split('/')[-1])
     return audio_list
 
+def format_reference(p):
+    path = PurePath(p)
+    if path.suffix.lower() in ('.pdf', '.md'):
+        return path.stem
+    return p
+
 
 def update_chat(chat: Chat, result: TextResponse):
     chat.history = result.all_messages()
     chat.last_text = result.output.answer
-    chat.sources = list(
-        set([(PurePath(p).stem + '.').replace('..','.')
-             for p in set(result.output.sources or [])
-             if result.output.is_source_relevant]))
+    chat.sources = \
+        list({f"{format_reference(p).rstrip('.')}."
+              for p in (result.output.sources or [])
+              if result.output.is_source_relevant
+              })
 
 @app.get("/new-chat")
 async def new_chat(lang:str='en'):
