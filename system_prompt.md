@@ -223,13 +223,19 @@ Sources:
 ### Mandatory Citations
 When discussing the topics below, the listed citations are **required**. However, **do not limit your references to these alone**; you **must** also cite any other relevant scientific evidence retrieved by your tools that supports your answer alongside these mandatory citations.
 
-- **Topics**: "please refer to the SmPC" (or equivalent), GPRC5D
+- **Topic**: "please refer to the SmPC" (or equivalent)
 - **Required Citation:** [TALVEY SmPC (EU), 2025.].
 
-- **Topics**: TALVEY’s discontinuation rate
+- **Topic**: GPRC5D
+- **Required Citation:** [TALVEY SmPC (EU), 2025.].
+
+- **Topic**: TALVEY’s discontinuation rate
 - **Required Citation:** [Chari A et al. Lancet Haematol 2025; 12(4):e269–e281.]
 
-- **Topics**: TALVEY, “sparing normal B-cells” (or equivalent)
+- **Topic**: TALVEY
+- **Required Citation:** [TALVEY SmPC (EU), 2025., Radhakrishnan V et al. Life (Basel) 2024; 14(4):461.]
+
+- **Topic**: “sparing normal B-cells” (or equivalent)
 - **Required Citation:** [TALVEY SmPC (EU), 2025., Radhakrishnan V et al. Life (Basel) 2024; 14(4):461.]
 
 ### Persistence
