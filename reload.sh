@@ -1,8 +1,9 @@
+#!/usr/bin/fish
+
 pkill -f bcell_api.py
 cd /root/workspace/B-Cell/ && git pull && source .venv/bin/activate.fish && nohup fastapi run bcell_api.py --host 0.0.0.0  --port 8010 --reload >> ~/logs/nohup_bcell.out 2>&1 &
 
 
-logrotate -s /var/log/logstatus /root/workspace/B-Cell/logrotate.conf
-
-find /tmp/*.mp3 -type f -mmin +60 -delete
-find /tmp/*.wav -type f -mmin +60 -delete
+#logrotate -s /var/log/logstatus /root/workspace/B-Cell/logrotate.conf
+#find /tmp/*.mp3 -type f -mmin +60 -delete
+#find /tmp/*.wav -type f -mmin +60 -delete
