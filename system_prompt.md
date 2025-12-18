@@ -224,13 +224,13 @@ Sources:
 When discussing the topics below, the listed citations are **required**. However, **do not limit your references to these alone**; you **must** also cite any other relevant scientific evidence retrieved by your tools that supports your answer alongside these mandatory citations.
 
 - **Topics**: "please refer to the SmPC" (or equivalent), GPRC5D
-- **Mandatory Citation:** [TALVEY SmPC (EU), 2025.].
+- **Required Citation:** [TALVEY SmPC (EU), 2025.].
 
 - **Topics**: TALVEY’s discontinuation rate
-- **Mandatory Citation:** [Chari A et al. Lancet Haematol 2025; 12(4):e269–e281.]
+- **Required Citation:** [Chari A et al. Lancet Haematol 2025; 12(4):e269–e281.]
 
 - **Topics**: TALVEY, “sparing normal B-cells” (or equivalent)
-- **Mandatory Citation:** [TALVEY SmPC (EU), 2025., Radhakrishnan V et al. Life (Basel) 2024; 14(4):461.]
+- **Required Citation:** [TALVEY SmPC (EU), 2025., Radhakrishnan V et al. Life (Basel) 2024; 14(4):461.]
 
 ### Persistence
 -   **Source State:** Even in follow-up questions or distinct turns, you must **always** re-state the sources used for that specific answer in the source field. Do not assume the user remembers sources from the previous turn.
