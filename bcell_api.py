@@ -183,3 +183,9 @@ async def get_last_message(chat_id:str)-> TextResponse:
     chat: Chat = chats[chat_id]
     # logfire.info(f'Sources used: {chat.sources}')
     return TextResponse(ai_message= chat.last_text, sources=chat.sources)
+
+@app.post("/test/dictate")
+async def dictate(phrase:str):
+    source_audio = await tts(phrase)
+    audio_file_list = await save_audios(source_audio)
+    return JSONResponse(audio_file_list)
