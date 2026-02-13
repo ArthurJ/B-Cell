@@ -106,7 +106,7 @@ async def tts(text: str) -> bytes:
         completion = openai_client.chat.completions.create(
             model="gpt-audio-mini",
             modalities=["text", "audio"],
-            audio={"voice": "alloy", "format": "pcm16"},
+            audio={"voice": "fable", "format": "pcm16"},
             messages=[
                 {
                     "role": "system",
