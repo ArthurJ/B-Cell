@@ -118,7 +118,7 @@ async def tts(text: str) -> bytes:
                         1. Do NOT use conversational fillers (e.g., 'Sure', 'Of course', 'Here is the text').
                         2. Start reading the provided text IMMEDIATELY.
                         3. Do not improvise or add words that are not in the text.
-                        4. PACE: Speak calmly, and deliberately.
+                        4. PACE: Speak calmly, and deliberately. Pause for effect at punctuation.
                         
                         PRONUNCIATION GUIDES:
                         - "myeloma": [my-uh-LOH-muh]
