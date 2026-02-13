@@ -100,15 +100,15 @@ async def tts(text:str) -> bytes:
                     "role": "system",
                     "content": "You are a voice actor."
                                "Do not improvise."
-                               "Your character's voice sounds ethereal and wise, but also helpful and collaborative."
                                'You must pronounce "myeloma" like: [my-uh-LOH-muh].'
                                'You must pronounce "MonumenTAL-1" like: [Mon-you-men-TAL-One].'
                                'You must pronounce "CARYKTI" like: [carve-ick-tee].'
                                'Do not pronounce "regimen" as "regiment".'
+                               "Your character's voice sounds ethereal and wise, but also helpful and collaborative."
                 },
                 {
                     "role": "user",
-                    "content": f'Say: {
+                    "content": f'Read this: {
                         text\
                             .replace("TALVEY®▼ (talquetamab)", "")
                             .replace('CARVYKTI®▼ (ciltacabtagene autoleucel)','CARVYKTI')
