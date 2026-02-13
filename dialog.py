@@ -26,8 +26,8 @@ logfire.instrument_openai()
 load_dotenv()
 openai_client = OpenAI()
 
-main_model='openai:gpt-4o'
-# main_model='openai:gpt-5.2-2025-12-11'
+# main_model='openai:gpt-4o'
+main_model='openai:gpt-5.2-2025-12-11'
 secundary_model='openai:gpt-4o-mini'
 audio_model='openai:gpt-4o-mini-audio-preview-2024-12-17'
 
@@ -101,10 +101,19 @@ async def tts(text:str) -> bytes:
                     "content": "You are a voice actor."
                                "Do not improvise."
                                "Your character's voice sounds ethereal and wise, but also helpful and collaborative."
+                               'You must pronounce "myeloma" like: [my-uh-LOH-muh].'
+                               'You must pronounce "MonumenTAL-1" like: [Mon-you-men-TAL-One].'
+                               'You must pronounce "CARYKTI" like: [carve-ick-tee].'
+                               'Do not pronounce "regimen" as "regiment".'
                 },
                 {
                     "role": "user",
-                    "content": f'Say: {text.replace("TECVAYLI", "TECVAYLEE").replace("GPRC5D", "G-P-R-C-five-D").replace('®','')}'
+                    "content": f'Say: {
+                        text.replace("TECVAYLI", "TECVAYLEE")\
+                            .replace("GPRC5D", "G-P-R-see-five-D")\
+                            .replace('®','')
+                            .replace('▼ (talquetamab)', '')\
+                    }'
                 }
             ]
         )
