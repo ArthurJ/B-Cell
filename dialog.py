@@ -87,9 +87,21 @@ async def interaction(query: str, dependencies: DialogContext,
 async def transcribe(audio: bytes, audio_type='audio/mp3') -> str:
     return (await transcriber_tradutor.run([BinaryContent(audio, media_type=audio_type)], model=audio_model) ).output.english_transcription
 
+async def tts(text: str) -> bytes:
+    cleaned_text = (
+        text
+        .replace("TALVEY®▼ (talquetamab)", "TALVEY")
+        .replace("CARVYKTI®▼ (ciltacabtagene autoleucel)", "CARVYKTI")
+        .replace("ABECMA®▼ (idecabtagene vicleucel)", "ABECMA")
+        .replace("ELREXFIO®▼ (elranatamab)", "ELREXFIO")
+        .replace("TECVAYLI®▼ (teclistamab)", "TECVAYLI")
+        .replace("DARZALEX® (daratumumab)", "DARZALEX")
+        .replace("®", "")
+        .replace("▼", "")
+        .replace("TECVAYLI", "TECVAYLEE")
+        .replace("GPRC5D", "G-P-R-see-five-D")
+    )
 
-
-async def tts(text:str) -> bytes:
     with Timer(initial_text='\nText-To-Speech', logger=logfire.info):
         completion = openai_client.chat.completions.create(
             model="gpt-audio-mini",
@@ -98,33 +110,28 @@ async def tts(text:str) -> bytes:
             messages=[
                 {
                     "role": "system",
-                    "content": "You are a voice actor."
-                               "Do not improvise."
-                               'You must pronounce "myeloma" like: [my-uh-LOH-muh].'
-                               'You must pronounce "MonumenTAL-1" like: [Mon-you-men-TAL-One].'
-                               'You must pronounce "CARYKTI" like: [carve-ick-tee].'
-                               'Do not pronounce "regimen" as "regiment".'
-                               "Your character's voice sounds ethereal and wise, but also helpful and collaborative."
+                    "content": (
+                        "Act as a Text-to-Speech engine, not a conversational assistant."
+                        "Your sole task is to read the text provided by the user aloud. "
+                        "CRITICAL RULES: "
+                        "1. Do NOT use conversational fillers (e.g., 'Sure', 'Of course', 'Here is the text'). "
+                        "2. Start reading the provided text IMMEDIATELY. "
+                        "3. Do not improvise or add words that are not in the text. "
+                        "PRONUNCIATION GUIDES: "
+                        '- "myeloma": [my-uh-LOH-muh] '
+                        '- "MonumenTAL-1": [Mon-you-men-TAL-One] '
+                        '- "CARVYKTI": [carve-ick-tee] '
+                        '- "regimen": Do NOT pronounce as "regiment". '
+                        "TONE: Ethereal, wise, helpful, and collaborative."
+                    )
                 },
                 {
                     "role": "user",
-                    "content": f'Read this: {
-                        text\
-                            .replace("TALVEY®▼ (talquetamab)", "")
-                            .replace('CARVYKTI®▼ (ciltacabtagene autoleucel)','CARVYKTI')
-                            .replace('ABECMA®▼ (idecabtagene vicleucel)','ABECMA')
-                            .replace('ELREXFIO®▼ (elranatamab)','ELREXFIO')
-                            .replace('TECVAYLI®▼ (teclistamab)','TECVAYLI')
-                            .replace('DARZALEX® (daratumumab)','DARZALEX')
-                            .replace('®','')
-                            .replace('▼','')
-                            .replace("TECVAYLI", "TECVAYLEE")
-                            .replace("GPRC5D", "G-P-R-see-five-D")
-                    }'
+                    "content": f"Read the following text exactly as written:\n\n{cleaned_text}"
                 }
             ]
         )
-    return  base64.b64decode(completion.choices[0].message.audio.data)
+    return base64.b64decode(completion.choices[0].message.audio.data)
 
 async def chorus(pcm_audio:bytes, qtd_voices=1, play=False, convert=True) -> List[bytes]:
     wav_data = pcm_2_wav(pcm_audio)
