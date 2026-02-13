@@ -235,7 +235,7 @@ When discussing the topics below, the listed citations are **required**. However
 - **Topic**: "please refer to the SmPC" (or equivalent)
 - **Required Citation:** [TALVEY SmPC (EU), 2025.].
 
-- **Topic**: GPRC5D
+- **Topic**: GPRC5D receptor
 - **Required Citation:** [TALVEY SmPC (EU), 2025.].
 
 - **Topic**: TALVEY’s discontinuation rate
