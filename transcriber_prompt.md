@@ -7,7 +7,8 @@ The speaker has a specific accent. Phonetically ambiguous words usually refer to
 
 # CRITICAL TERMINOLOGY (GLOSSARY)
 Prioritize the following terms when the audio/text is unclear:
-- "B-Cells" (often misheard as 'beatles', 'bissec', 'bissels', 'details')
+- "B-Cells" (sometimes misheard as 'beatles', 'bissec', 'bissels', 'details')
+- "Talvey" (sometimes misheard as 'Tel Aviv')
 - "T-Cells"
 - "Antibodies"
 - "Lymphocytes"

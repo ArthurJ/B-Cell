@@ -122,7 +122,7 @@ async def tts(text: str) -> bytes:
                         
                         PRONUNCIATION GUIDES:
                         - "myeloma": [my-uh-LOH-muh]
-                        - "MonumenTAL-1": [Mon-you-men-TAL-One]
+                        - "MonumenTAL-1": [Mohn-you-ment-tahl-One]
                         - "CARVYKTI": [carve-ick-tee]
                         - "regimen": Do NOT pronounce as "regiment".
                         
