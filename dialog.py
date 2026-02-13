@@ -109,10 +109,17 @@ async def tts(text:str) -> bytes:
                 {
                     "role": "user",
                     "content": f'Say: {
-                        text.replace("TECVAYLI", "TECVAYLEE")\
-                            .replace("GPRC5D", "G-P-R-see-five-D")\
+                        text\
+                            .replace("TALVEY®▼ (talquetamab)", "")
+                            .replace('CARVYKTI®▼ (ciltacabtagene autoleucel)','CARVYKTI')
+                            .replace('ABECMA®▼ (idecabtagene vicleucel)','ABECMA')
+                            .replace('ELREXFIO®▼ (elranatamab)','ELREXFIO')
+                            .replace('TECVAYLI®▼ (teclistamab)','TECVAYLI')
+                            .replace('DARZALEX® (daratumumab)','DARZALEX')
                             .replace('®','')
-                            .replace('▼ (talquetamab)', '')\
+                            .replace('▼','')
+                            .replace("TECVAYLI", "TECVAYLEE")
+                            .replace("GPRC5D", "G-P-R-see-five-D")
                     }'
                 }
             ]
