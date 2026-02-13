@@ -1,10 +1,9 @@
 import asyncio
 import json
-# from itertools import product
-
 
 from dataclasses import dataclass
-from typing import List, Optional
+from pathlib import Path
+from typing import List
 
 import logfire
 from dotenv import load_dotenv
@@ -28,6 +27,7 @@ load_dotenv()
 openai_client = OpenAI()
 
 main_model='openai:gpt-4o'
+# main_model='openai:gpt-5.2-2025-12-11'
 secundary_model='openai:gpt-4o-mini'
 audio_model='openai:gpt-4o-mini-audio-preview-2024-12-17'
 
@@ -45,20 +45,18 @@ class MainAgentOutputType(BaseModel):
                                   ,validation_alias='metadata.source')
     is_source_relevant: bool = Field(description='Whether or not the given sources are relevant to the user learn more about the question they made.')
 
-@dataclass
-class TranscriberOutputType:
-    original_transcription: str
-    language: str
-    english_transcription: str
+class TranscriberOutputType(BaseModel):
+    original_transcription: str = Field(
+        description="The raw transcription. Apply phonetic corrections (e.g., 'beatles' -> 'B-Cells') here.")
+    language: str = Field(description="ISO 639-1 language code.")
+    english_transcription: str = Field(
+        description="The final English translation/transcription. Ensure medical terminology is accurate.")
 
 transcriber_tradutor = Agent(
     retries=3,
     instrument=True,
     output_type=TranscriberOutputType,
-    instructions='You are an excellent Captioner, Transcriptionist and Translator.'
-                 "Some of the queries you'll receive are questions, treat it as any other sentence:"
-                 'Transcribe, translating to english if necessary.'
-                 'Your only jobs is to transcribe and translate, nothing else.'
+    instructions=Path('transcriber_prompt.md').read_text()
 )
 
 bcell = Agent(
