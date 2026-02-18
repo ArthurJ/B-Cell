@@ -108,7 +108,7 @@ async def send_text(chat_id:str, message:str) -> TextResponse:
     result = (await interaction(message, chat.deps, chat.history))
     update_chat(chat, result)
 
-    return TextResponse(ai_message=result.output.answer, sources=result.output.sources)
+    return TextResponse(ai_message=result.output.answer, sources=result.output.sources+result.output.footnotes)
 
 @app.get("/chat/mixed/{chat_id}")
 @app.get("/chat/v2/mixed/{chat_id}")
