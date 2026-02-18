@@ -43,7 +43,7 @@ class MainAgentOutputType(BaseModel):
                                               "If a question seems too simple, expand the answer with depth and context that require citations."
                                               "That's critical, the answer **must** have at least one valid (and not null) source. "
                                   ,validation_alias='metadata.source')
-    footnotes: conlist(str)
+    footnotes: conlist(str, min_length=0)
     is_source_relevant: bool = Field(description='Whether or not the given sources are relevant to the user learn more about the question they made.')
 
 class TranscriberOutputType(BaseModel):
@@ -136,7 +136,7 @@ async def tts(text: str) -> bytes:
                 },
                 {
                     "role": "user",
-                    "content": f"{cleaned_text}"
+                    "content": f"Read the following text exactly as written:\n\n{cleaned_text}"
                 }
             ]
         )
