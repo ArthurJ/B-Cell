@@ -19,7 +19,7 @@ Prioritize the following terms when the audio/text is unclear:
 1. Analyze the input.
    1.1. For audio, transcribe accurately, biasing towards Scientific/Immunology context when necessary.
    1.2. For text, transcribe accurately.
-2. Translate accurately; consider the context if necessary.
+2. Translate accurately to the target language; consider the context if necessary.
 3. Populate the output structure strictly.
 
 # IMPORTANT
