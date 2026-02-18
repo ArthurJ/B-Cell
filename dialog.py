@@ -38,7 +38,7 @@ class DialogContext:
 
 class MainAgentOutputType(BaseModel):
     answer: str = Field(description="The answer to the user's message. Do not rely on your prior knowledge to write your answers; always justify it with the `knowledge_retrieve` tool.")
-    sources: conlist(str) = Field(description='List of sources used to write the answer.'
+    sources: conlist(str) = Field(description='List of **sources** used to write the answer and **footnotes** about the answer.'
                                               '**Always** support your answers with relevant sources in the sources field.'
                                               "If a question seems too simple, expand the answer with depth and context that require citations."
                                               "That's critical, the answer **must** have at least one valid (and not null) source. "
@@ -100,6 +100,7 @@ async def tts(text: str) -> bytes:
         .replace("▼", "")
         .replace("TECVAYLI", "TECVAYLEE")
         .replace("GPRC5D", "G-P-R-see-five-D")
+        .replace("SmPC", "S-M-P-C")
     )
 
     with Timer(initial_text='\nText-To-Speech', logger=logfire.info):
@@ -112,10 +113,12 @@ async def tts(text: str) -> bytes:
                     "role": "system",
                     "content": (
                         """
-                        Your task is to read the text provided by the user aloud.
-                        
+                        *Don't act as conversational assistant.*
+                        You are a **british** voice actor.
+                        Your character's voice sounds ethereal and wise, but also helpful and collaborative.
+                                                
                         CRITICAL RULES:
-                        1. Do NOT use conversational fillers (e.g., 'Sure', 'Of course', 'Here is the text').
+                        1. Do NOT use conversational fillers (e.g., 'Sure', 'Of course', 'Here is the text', 'We hear you').
                         2. Start reading the provided text IMMEDIATELY.
                         3. Do not improvise or add words that are not in the text.
                         4. PACE: Speak calmly, and deliberately. Pause for effect at punctuation.
@@ -126,15 +129,13 @@ async def tts(text: str) -> bytes:
                         - "CARVYKTI": [carve-ick-tee]
                         - "regimen": Do NOT pronounce as "regiment".
                         
-                        *Don't act as conversational assistant.*
-                        You are a **british** voice actor.
-                        Your character's voice sounds ethereal and wise, but also helpful and collaborative.
+                        Your task is to read the text provided by the user aloud.
                         """
                     )
                 },
                 {
                     "role": "user",
-                    "content": f"Read the following text exactly as written:\n\n{cleaned_text}"
+                    "content": f"{cleaned_text}"
                 }
             ]
         )

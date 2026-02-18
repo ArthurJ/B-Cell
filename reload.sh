@@ -5,5 +5,5 @@ cd /root/workspace/B-Cell/ && git pull && source .venv/bin/activate.fish && nohu
 
 
 #logrotate -s /var/log/logstatus /root/workspace/B-Cell/logrotate.conf
-#find /tmp/*.mp3 -type f -mmin +60 -delete
-#find /tmp/*.wav -type f -mmin +60 -delete
+#find /tmp/*.mp3 -type f -mmin +1260 -delete
+#find /tmp/*.wav -type f -mmin +1260 -delete
