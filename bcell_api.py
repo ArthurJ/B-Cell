@@ -14,9 +14,9 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from secrets import token_hex
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
-from dialog import interaction, tts, transcribe, initial_run, DialogContext, chorus
+from dialog import interaction, tts, transcribe, initial_run, DialogContext, chorus, Language, translate
 
 app = FastAPI(title='B-Cell API V3')
 app.add_middleware(
@@ -76,15 +76,16 @@ def update_chat(chat: Chat, result: TextResponse):
     chat.history = result.all_messages()
     chat.last_text = result.output.answer
     chat.sources = \
+        result.output.footnotes +\
         list({f"{format_reference(p).rstrip('.')}."
               for p in (result.output.sources or [])
               if result.output.is_source_relevant
               })
 
 @app.get("/new-chat")
-async def new_chat(lang:str='en'):
+async def new_chat(lang:Language='en'):
     chat_id = token_hex()
-    deps = DialogContext(talvey_claims=claims, system_prompt=prompt)
+    deps = DialogContext(talvey_claims=claims, system_prompt=prompt, target_language=lang)
     first_run = await initial_run(deps)
     chat = Chat(thread_id=chat_id,
                 history=first_run.all_messages(),
@@ -107,8 +108,10 @@ async def send_text(chat_id:str, message:str) -> TextResponse:
     message = BeautifulSoup(message, "html.parser").get_text()
     result = (await interaction(message, chat.deps, chat.history))
     update_chat(chat, result)
-
-    return TextResponse(ai_message=result.output.answer, sources=result.output.sources+result.output.footnotes)
+    if chat.deps.target_language != 'en':
+        ai_message = await translate(result.output.answer, chat.deps)
+        return TextResponse(ai_message=ai_message, sources=result.output.footnotes + result.output.sources)
+    return TextResponse(ai_message=result.output.answer, sources=result.output.footnotes + result.output.sources)
 
 @app.get("/chat/mixed/{chat_id}")
 @app.get("/chat/v2/mixed/{chat_id}")
@@ -182,7 +185,10 @@ async def get_last_message(chat_id:str)-> TextResponse:
         raise HTTPException(status_code=404, detail="Chat not found.")
     chat: Chat = chats[chat_id]
     # logfire.info(f'Sources used: {chat.sources}')
-    return TextResponse(ai_message= chat.last_text, sources=chat.sources)
+    if chat.deps.target_language != 'en':
+        translated = await translate(chat.last_text, chat.deps)
+        return TextResponse(ai_message=translated, sources=chat.sources)
+    return TextResponse(ai_message=chat.last_text, sources=chat.sources)
 
 @app.post("/test/dictate")
 async def dictate(phrase:str):

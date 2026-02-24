@@ -3,7 +3,7 @@ import json
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import List
+from typing import List, Literal
 
 import logfire
 from dotenv import load_dotenv
@@ -31,19 +31,23 @@ main_model='openai:gpt-5.2-2025-12-11'
 secundary_model='openai:gpt-4o-mini'
 audio_model='openai:gpt-4o-mini-audio-preview-2024-12-17'
 
+#Language = Literal['en', 'pl', 'pt']
+Language = Literal['en']
+
 @dataclass
 class DialogContext:
     talvey_claims: str
     system_prompt: str
+    target_language: Language
 
 class MainAgentOutputType(BaseModel):
+    footnotes: conlist(str, min_length=0)
     answer: str = Field(description="The answer to the user's message. Do not rely on your prior knowledge to write your answers; always justify it with the `knowledge_retrieve` tool.")
     sources: conlist(str) = Field(description='List of **sources** used to write the answer.'
                                               '**Always** support your answers with relevant sources in the sources field.'
                                               "If a question seems too simple, expand the answer with depth and context that require citations."
                                               "That's critical, the answer **must** have at least one valid (and not null) source. "
                                   ,validation_alias='metadata.source')
-    footnotes: conlist(str, min_length=0)
     is_source_relevant: bool = Field(description='Whether or not the given sources are relevant to the user learn more about the question they made.')
 
 class TranscriberOutputType(BaseModel):
@@ -53,11 +57,24 @@ class TranscriberOutputType(BaseModel):
     english_transcription: str = Field(
         description="The final English translation/transcription. Ensure medical terminology is accurate.")
 
-transcriber_tradutor = Agent(
+class TranslatorOutputType(BaseModel):
+    translation: str = Field(
+        description=f"The translation to the target language. Ensure medical terminology is accurate.")
+
+transcriber = Agent(
     retries=3,
     instrument=True,
     output_type=TranscriberOutputType,
     instructions=Path('transcriber_prompt.md').read_text()
+)
+
+translator = Agent(
+    model=main_model,
+    retries=3,
+    instrument=True,
+    output_type=TranslatorOutputType,
+    deps_type=DialogContext,
+    instructions=Path('translator_prompt.md').read_text()
 )
 
 bcell = Agent(
@@ -77,16 +94,24 @@ def add_claims(ctx: RunContext[DialogContext]) -> str:
 def add_prompt(ctx: RunContext[DialogContext]) -> str:
     return f'Your prompt:\n{ctx.deps.system_prompt}'
 
+@translator.system_prompt
+def language(ctx: RunContext[DialogContext]) -> str:
+    return f'Target language:\n{ctx.deps.target_language}'
+
 async def interaction(query: str, dependencies: DialogContext,
                       chat_history, model=main_model):
+    to_english_context = DialogContext(target_language='en', talvey_claims='', system_prompt='')
     with Timer(initial_text='\nMain model', logger=logfire.info):
-        query = (await transcriber_tradutor.run(query, model=secundary_model)).output.english_transcription
+        query = (await translate(query, to_english_context))
         b_cell_result = await bcell.run(query, message_history=chat_history, deps=dependencies, model=model)
 
     return b_cell_result
 
+async def translate(query: str, dependencies: DialogContext) -> str:
+    return (await translator.run(user_prompt=query, deps=dependencies)).output.translation
+
 async def transcribe(audio: bytes, audio_type='audio/mp3') -> str:
-    return (await transcriber_tradutor.run([BinaryContent(audio, media_type=audio_type)], model=audio_model) ).output.english_transcription
+    return (await transcriber.run([BinaryContent(audio, media_type=audio_type)], model=audio_model)).output.english_transcription
 
 async def tts(text: str) -> bytes:
     cleaned_text = (
@@ -176,7 +201,8 @@ if __name__ == '__main__':
 
     deps = DialogContext(
         talvey_claims= json.load(open("knowledge/talvey-claims.json", 'r')),
-        system_prompt= open('system_prompt.md', 'r').read()
+        system_prompt= open('system_prompt.md', 'r').read(),
+        target_language='pt'
     )
 
     initial = initial_run_sync(deps)
