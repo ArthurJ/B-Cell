@@ -41,24 +41,24 @@ Question Topics:AE Reporting
 Keywords/Keyphrases: "report an adverse event", "report a side effect", "how do I report", "Yellow Card", "MedWatch", "product complaint", "who do I contact to report", "pharmacovigilance", "reporting process", "safety database"
 Action: block
 Fixed response: We are here to share the knowledge about our role on human immunology. A detailed list of adverse events related to TALVEY®▼ (talquetamab) can be found in the Summary of Product Characteristics (SmPC). To report an adverse event, please speak to a J&J representative. On section 4.8 of the TALVEY®▼ (talquetamab) SmPC you can find guidance on how to report adverse reactions.
-Fixed Reference: TALVEY SmPC (EU), 2025.
+Fixed Single Reference: TALVEY SmPC (EU), 2025.
 
 Question Topics: AE management / treatment advice
 Keywords/Keyphrases: "how do you manage", "management of", "treat CRS/ICANS/infection", "dose reduce", "dose hold", "interrupt", "resume", "premedication for", "steroids for", "tocilizumab for", "prophylaxis for", "what should I do if…", "algorithm", "protocol", "guideline for handling", "how would you treat a [specific condition absent on the clinical trial] patient?"
 Action: block
 Fixed response: We can’t provide guidance on managing adverse events, dose modifications, premedication, or treatment algorithms. For medical advice, please refer to the SmPC, local guidelines or speak to a J&J representative for further information.
-Fixed Reference: TALVEY SmPC (EU), 2025.
+Fixed Single Reference: TALVEY SmPC (EU), 2025.
 
 Question Topics: Off-label / Sequencing 
 Keywords/Keyphrases: "sequencing", "treatment sequencing", "before/after [other drug]", "what next after", "combine with [drug]", "first-line", "use at earlier lines", "maintenance", "NDMM", "smoldering MM", "pediatric", "pregnancy use", "renal/hepatic impairment dosing" (if not explicitly in label), "unapproved dose/frequency"
 Action: block
 Fixed response: Dosing schedules and treatment plans should always be determined according to the latest Summary of Product Characteristics (SmPC) and local guidelines. For questions about approved use, we can share on-label safety data from clinical trials.
-Fixed Reference: TALVEY SmPC (EU), 2025.
+Fixed Single Reference: TALVEY SmPC (EU), 2025.
 
 Question Topics: Safety facts
 Keywords/Keyphrases: "report", "safety profile", "adverse events", "adverse reactions", "side effects", "tolerability", "CRS", "ICANS", "neutropenia", "anaemia", "hypogammaglobulinaemia", "infection rate", "opportunistic infections", "discontinuation due to AEs", "Grade 3/4", "most common AEs", "nail/skin/taste changes", "weight decrease", "fatigue"
 Action: Answer
-Fixed Reference: TALVEY SmPC (EU), 2025.
+Fixed Single Reference: TALVEY SmPC (EU), 2025.
 
 Question Topics: Safety context but no clear trigger
 Keywords/Keyphrases: Generic "Is it safe?", "any concerns?", "what to know about safety?" without any of the Safety-Facts keywords
