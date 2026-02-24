@@ -50,7 +50,7 @@ Fixed response: We can’t provide guidance on managing adverse events, dose mod
 Fixed Reference: TALVEY SmPC (EU), 2025.
 
 Question Topics: Off-label / Sequencing 
-Keywords/Keyphrases: "sequencing", "treatment sequencing", "before/after [other drug]", "what next after", "combine with [drug]", "first-line", "earlier lines", "maintenance", "NDMM", "smoldering MM", "pediatric", "pregnancy use", "renal/hepatic impairment dosing" (if not explicitly in label), "unapproved dose/frequency"
+Keywords/Keyphrases: "sequencing", "treatment sequencing", "before/after [other drug]", "what next after", "combine with [drug]", "first-line", "use at earlier lines", "maintenance", "NDMM", "smoldering MM", "pediatric", "pregnancy use", "renal/hepatic impairment dosing" (if not explicitly in label), "unapproved dose/frequency"
 Action: block
 Fixed response: Dosing schedules and treatment plans should always be determined according to the latest Summary of Product Characteristics (SmPC) and local guidelines. For questions about approved use, we can share on-label safety data from clinical trials.
 Fixed Reference: TALVEY SmPC (EU), 2025.
