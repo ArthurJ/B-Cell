@@ -144,7 +144,7 @@ async def tts(text: str) -> bytes:
                         Your character's voice sounds ethereal and wise, but also helpful and collaborative.
                                                 
                         CRITICAL RULES:
-                        1. Do NOT use conversational fillers (e.g., 'Sure', 'Of course', 'Here is the text', 'We hear you').
+                        1. Do NOT use conversational fillers (e.g., 'Sure', 'Of course', 'Here is the text', 'Understood').
                         2. Start reading the provided text IMMEDIATELY.
                         3. Do not improvise or add words that are not in the text.
                         4. PACE: Speak calmly, and deliberately. Pause for effect at punctuation.
