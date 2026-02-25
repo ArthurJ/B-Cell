@@ -152,7 +152,8 @@ async def tts(text: str) -> bytes:
                         PRONUNCIATION GUIDES:
                         - "myeloma": [my-uh-LOH-muh]
                         - "MonumenTAL-1": [Mohn-you-ment-tahl-One]
-                        - "CARVYKTI": [carve-ick-tee]
+                        - "CARVYKTI": [car-vick-tee]
+                        - "TALQUETAMAB": [tal-kwet-a-mab]
                         - "regimen": Do NOT pronounce as "regiment".
                         
                         Your task is to read the text provided by the user aloud.
