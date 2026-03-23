@@ -41,7 +41,7 @@ class DialogContext:
     target_language: Language
 
 class MainAgentOutputType(BaseModel):
-    footnotes: conlist(str, min_length=0)
+    footnotes: conlist(str, min_length=0) = Field(description='Relevant details about the study design.')
     answer: str = Field(description="The answer to the user's message. Do not rely on your prior knowledge to write your answers; always justify it with the `knowledge_retrieve` tool.")
     sources: conlist(str) = Field(description='List of **sources** used to write the answer.'
                                               '**Always** support your answers with relevant sources in the sources field.'

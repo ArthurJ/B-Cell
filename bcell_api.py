@@ -2,7 +2,7 @@ import json
 import os
 from itertools import islice, cycle
 from pathlib import PurePath
-from typing import List, Annotated
+from typing import List, Annotated, Optional
 
 import logfire
 import tempfile
@@ -40,9 +40,11 @@ class Chat(BaseModel):
     deps: DialogContext
     last_text: str
     sources: List[str]
+    footnotes: List[str]
 
 class TextResponse(BaseModel):
     ai_message: str
+    footnotes: List[str]
     sources: List[str]
 
 
@@ -75,8 +77,8 @@ def format_reference(p):
 def update_chat(chat: Chat, result: TextResponse):
     chat.history = result.all_messages()
     chat.last_text = result.output.answer
+    chat.footnotes = result.output.footnotes
     chat.sources = \
-        result.output.footnotes +\
         list({f"{format_reference(p).rstrip('.')}."
               for p in (result.output.sources or [])
               if result.output.is_source_relevant
@@ -91,7 +93,8 @@ async def new_chat(lang:Language='en'):
                 history=first_run.all_messages(),
                 deps=deps,
                 last_text=first_run.output.answer,
-                sources=[])
+                sources=[],
+                footnotes=[])
     chats[chat_id] = chat
     logfire.info(f'Chat created: {chat_id} handled by worker PID: {os.getpid()}')
     return {"chat_id": chat_id, 'ai_message':first_run.output.answer, 'sources':[]}
@@ -110,8 +113,8 @@ async def send_text(chat_id:str, message:str) -> TextResponse:
     update_chat(chat, result)
     if chat.deps.target_language != 'en':
         ai_message = await translate(result.output.answer, chat.deps)
-        return TextResponse(ai_message=ai_message, sources=result.output.footnotes + result.output.sources)
-    return TextResponse(ai_message=result.output.answer, sources=result.output.footnotes + result.output.sources)
+        return TextResponse(ai_message=ai_message, sources=result.output.sources, footnotes=result.output.footnotes)
+    return TextResponse(ai_message=result.output.answer, sources=result.output.sources, footnotes=result.output.footnotes)
 
 @app.get("/chat/mixed/{chat_id}")
 @app.get("/chat/v2/mixed/{chat_id}")
@@ -187,8 +190,8 @@ async def get_last_message(chat_id:str)-> TextResponse:
     # logfire.info(f'Sources used: {chat.sources}')
     if chat.deps.target_language != 'en':
         translated = await translate(chat.last_text, chat.deps)
-        return TextResponse(ai_message=translated, sources=chat.sources)
-    return TextResponse(ai_message=chat.last_text, sources=chat.sources)
+        return TextResponse(ai_message=translated, sources=chat.sources, footnotes=chat.footnotes)
+    return TextResponse(ai_message=chat.last_text, sources=chat.sources, footnotes=chat.footnotes)
 
 @app.post("/test/dictate")
 async def dictate(phrase:str):
