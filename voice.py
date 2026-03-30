@@ -25,10 +25,10 @@ async def convert_voice(audio_bytes, voice_id, out_format='pcm_44100'):
     return converted_audio_bytes
 
 async def gather_voices(audio_bytes, out_format='mp3_44100_192', qtd_voices=3):
-    voice_ids = ['ELEVEN_LABS_VOICE_ID_1', 'ELEVEN_LABS_VOICE_ID_2',
-                 'ELEVEN_LABS_VOICE_ID_3', 'ELEVEN_LABS_VOICE_ID_4',
-                 'ELEVEN_LABS_VOICE_ID_5', 'ELEVEN_LABS_VOICE_ID_6',
-                 'ELEVEN_LABS_VOICE_ID_7']
+    voice_ids = [f'ELEVEN_LABS_VOICE_ID_1', f'ELEVEN_LABS_VOICE_ID_2',
+                 f'ELEVEN_LABS_VOICE_ID_3', f'ELEVEN_LABS_VOICE_ID_4',
+                 f'ELEVEN_LABS_VOICE_ID_5', f'ELEVEN_LABS_VOICE_ID_6',
+                 f'ELEVEN_LABS_VOICE_ID_7']
     ids = sample(voice_ids, k=qtd_voices)
 
     return await asyncio.gather(
@@ -57,4 +57,4 @@ def wav_2_pcm(wav_data: bytes) -> Tuple[bytes, int, int, int]:
         frame_rate = wf.getframerate()
         pcm_data = wf.readframes(wf.getnframes())
 
-        return (pcm_data, channels, sample_width, frame_rate)
+        return pcm_data, channels, sample_width, frame_rate

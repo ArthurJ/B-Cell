@@ -127,7 +127,6 @@ async def tts(text: str, language:Language = 'en') -> bytes:
                         'TECVAYLI': 'TECVAYLEE',
                         'GPRC5D':'G-P-R-see-five-D',
                         'SmPC': 'S-M-P-C',
-                        '': '',
                         }
     guide = {'en': pronunciation_en,
              'pt': dict(),

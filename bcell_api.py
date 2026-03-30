@@ -88,16 +88,15 @@ def update_chat(chat: Chat, result: TextResponse):
 async def new_chat(lang:Language='en'):
     chat_id = token_hex()
     deps = DialogContext(talvey_claims=claims, system_prompt=prompt, target_language=lang)
-    first_run = await initial_run(deps)
     chat = Chat(thread_id=chat_id,
-                history=first_run.all_messages(),
+                history=[],
                 deps=deps,
-                last_text=first_run.output.answer,
+                last_text="",
                 sources=[],
                 footnotes=[])
     chats[chat_id] = chat
     logfire.info(f'Chat created: {chat_id} handled by worker PID: {os.getpid()}')
-    return {"chat_id": chat_id, 'ai_message':first_run.output.answer, 'sources':[]}
+    return {"chat_id": chat_id, 'ai_message':"", 'sources':[]}
 
 
 @app.get("/chat/text/{chat_id}")
