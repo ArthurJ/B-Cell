@@ -112,7 +112,8 @@ async def send_text(chat_id:str, message:str) -> TextResponse:
     update_chat(chat, result)
     if chat.deps.target_language != 'en':
         ai_message = await translate(result.output.answer, chat.deps)
-        return TextResponse(ai_message=ai_message, sources=result.output.sources, footnotes=result.output.footnotes)
+        footnotes = [await translate(note, chat.deps) for note in result.output.footnotes]
+        return TextResponse(ai_message=ai_message, sources=result.output.sources, footnotes=footnotes)
     return TextResponse(ai_message=result.output.answer, sources=result.output.sources, footnotes=result.output.footnotes)
 
 @app.get("/chat/mixed/{chat_id}")
