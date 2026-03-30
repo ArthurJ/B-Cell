@@ -31,8 +31,8 @@ main_model='openai:gpt-5.2-2025-12-11'
 secundary_model='openai:gpt-4o-mini'
 audio_model='openai:gpt-4o-mini-audio-preview-2024-12-17'
 
-#Language = Literal['en', 'pl', 'pt']
-Language = Literal['en']
+Language = Literal['en', 'pl', 'pt_BR']
+# Language = Literal['en', 'pl', 'pt', 'pt_BR']
 
 @dataclass
 class DialogContext:
@@ -113,7 +113,26 @@ async def translate(query: str, dependencies: DialogContext) -> str:
 async def transcribe(audio: bytes, audio_type='audio/mp3') -> str:
     return (await transcriber.run([BinaryContent(audio, media_type=audio_type)], model=audio_model)).output.english_transcription
 
-async def tts(text: str) -> bytes:
+async def tts(text: str, language:Language = 'en') -> bytes:
+    country = {'en':'London, United Kingdom',
+               'pt':'Portugal',
+               'pt_BR':'São Paulo, Brasil',
+               'pl':'Poland'
+               }
+    pronunciation_en = {'myeloma':'my-uh-LOH-muh',
+                        'MonumenTAL-1': 'Mohn-you-ment-tahl-One',
+                        'CARVYKTI': 'car-vick-tee',
+                        'TALQUETAMAB': 'tal-kwet-a-mab',
+                        'regimen': 'Do NOT pronounce as "regiment"',
+                        'TECVAYLI': 'TECVAYLEE',
+                        'GPRC5D':'G-P-R-see-five-D',
+                        'SmPC': 'S-M-P-C',
+                        '': '',
+                        }
+    guide = {'en': pronunciation_en,
+             'pt': dict(),
+             'pl': dict()}
+
     cleaned_text = (
         text
         .replace("TALVEY®▼ (talquetamab)", "TALVEY")
@@ -124,10 +143,16 @@ async def tts(text: str) -> bytes:
         .replace("DARZALEX® (daratumumab)", "DARZALEX")
         .replace("®", "")
         .replace("▼", "")
-        .replace("TECVAYLI", "TECVAYLEE")
-        .replace("GPRC5D", "G-P-R-see-five-D")
-        .replace("SmPC", "S-M-P-C")
     )
+
+    accent_guide = ''
+    lang_guide = guide.get(language, {})
+    if lang_guide:
+        accent_guide = 'PRONUNCIATION GUIDES:\n'
+        for word, pronounce in lang_guide.items():
+            accent_guide+=f'-{word}: [{pronounce}]\n'
+
+    actor_country = country.get(language, country['en'])
 
     with Timer(initial_text='\nText-To-Speech', logger=logfire.info):
         completion = openai_client.chat.completions.create(
@@ -138,9 +163,9 @@ async def tts(text: str) -> bytes:
                 {
                     "role": "system",
                     "content": (
-                        """
+                        f"""
                         *Don't act as conversational assistant.*
-                        You are a **british** voice actor.
+                        You are a voice actor from **{actor_country}**; speaking in your native language and accent.
                         Your character's voice sounds ethereal and wise, but also helpful and collaborative.
                                                 
                         CRITICAL RULES:
@@ -149,15 +174,9 @@ async def tts(text: str) -> bytes:
                         3. Do not improvise or add words that are not in the text.
                         4. PACE: Speak calmly, and deliberately. Pause for effect at punctuation.
                         
-                        PRONUNCIATION GUIDES:
-                        - "myeloma": [my-uh-LOH-muh]
-                        - "MonumenTAL-1": [Mohn-you-ment-tahl-One]
-                        - "CARVYKTI": [car-vick-tee]
-                        - "TALQUETAMAB": [tal-kwet-a-mab]
-                        - "regimen": Do NOT pronounce as "regiment".
-                        
                         Your task is to read the text provided by the user aloud.
                         """
+                        + accent_guide
                     )
                 },
                 {
@@ -168,7 +187,7 @@ async def tts(text: str) -> bytes:
         )
     return base64.b64decode(completion.choices[0].message.audio.data)
 
-async def chorus(pcm_audio:bytes, qtd_voices=1, play=False, convert=True) -> List[bytes]:
+async def chorus(pcm_audio:bytes, qtd_voices=1, play=False, convert=True, language:Language='en') -> List[bytes]:
     wav_data = pcm_2_wav(pcm_audio)
     if play:
         pass
@@ -203,7 +222,7 @@ if __name__ == '__main__':
     deps = DialogContext(
         talvey_claims= json.load(open("knowledge/talvey-claims.json", 'r')),
         system_prompt= open('system_prompt.md', 'r').read(),
-        target_language='pt'
+        target_language='pt_BR'
     )
 
     initial = initial_run_sync(deps)

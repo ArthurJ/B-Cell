@@ -54,8 +54,8 @@ prompt= open('system_prompt.md', 'r').read()
 chats = dict()
 
 
-async def save_audios(source_audio, qtd_voices=3):
-    voices = await chorus(source_audio, qtd_voices=qtd_voices)
+async def save_audios(source_audio, qtd_voices=3, language:Language='en'):
+    voices = await chorus(source_audio, qtd_voices=qtd_voices, language=language)
     audio_list = []
 
     for d in islice(cycle(voices), 7):
@@ -129,9 +129,13 @@ async def send_mixed(chat_id: str, message: str):
     result = (await interaction(message, chat.deps, chat.history))
     update_chat(chat, result)
 
-    source_audio = await tts(result.output.answer)
+    ai_message = result.output.answer
+    if chat.deps.target_language != 'en':
+        ai_message = await translate(result.output.answer, chat.deps)
 
-    audio_file_list = await save_audios(source_audio)
+    source_audio = await tts(ai_message, language=chat.deps.target_language)
+
+    audio_file_list = await save_audios(source_audio, language=chat.deps.target_language)
     return JSONResponse(audio_file_list)
 
 @app.post("/chat/audio/{chat_id}")
@@ -161,9 +165,13 @@ async def send_audio(chat_id:str,
     result = (await interaction(transcription, chat.deps, chat.history))
     update_chat(chat, result)
 
-    source_audio = await tts(result.output.answer)
+    ai_message = result.output.answer
+    if chat.deps.target_language != 'en':
+        ai_message = await translate(result.output.answer, chat.deps)
 
-    audio_file_list = await save_audios(source_audio)
+    source_audio = await tts(ai_message, language=chat.deps.target_language)
+
+    audio_file_list = await save_audios(source_audio, language=chat.deps.target_language)
     return JSONResponse(audio_file_list)
 
 @app.get("/chat/v2/download/{file_name}")
