@@ -74,10 +74,16 @@ def format_reference(p):
     return p
 
 
-def update_chat(chat: Chat, result: TextResponse):
+async def update_chat(chat: Chat, result: TextResponse):
+    ai_message = ''
+    footnotes = []
+    if chat.deps.target_language != 'en':
+        ai_message = await translate(result.output.answer, chat.deps)
+        footnotes = [await translate(note, chat.deps) for note in result.output.footnotes]
+
     chat.history = result.all_messages()
-    chat.last_text = result.output.answer
-    chat.footnotes = result.output.footnotes
+    chat.last_text = ai_message or result.output.answer
+    chat.footnotes = footnotes or result.output.footnotes
     chat.sources = \
         list({f"{format_reference(p).rstrip('.')}."
               for p in (result.output.sources or [])
@@ -109,12 +115,9 @@ async def send_text(chat_id:str, message:str) -> TextResponse:
     chat: Chat = chats[chat_id]
     message = BeautifulSoup(message, "html.parser").get_text()
     result = (await interaction(message, chat.deps, chat.history))
-    update_chat(chat, result)
-    if chat.deps.target_language != 'en':
-        ai_message = await translate(result.output.answer, chat.deps)
-        footnotes = [await translate(note, chat.deps) for note in result.output.footnotes]
-        return TextResponse(ai_message=ai_message, sources=result.output.sources, footnotes=footnotes)
-    return TextResponse(ai_message=result.output.answer, sources=result.output.sources, footnotes=result.output.footnotes)
+    await update_chat(chat, result)
+
+    return TextResponse(ai_message=chat.last_text, sources=result.output.sources, footnotes=chat.footnotes)
 
 @app.get("/chat/mixed/{chat_id}")
 @app.get("/chat/v2/mixed/{chat_id}")
@@ -127,13 +130,9 @@ async def send_mixed(chat_id: str, message: str):
 
     message = BeautifulSoup(message, "html.parser").get_text()
     result = (await interaction(message, chat.deps, chat.history))
-    update_chat(chat, result)
+    await update_chat(chat, result)
 
-    ai_message = result.output.answer
-    if chat.deps.target_language != 'en':
-        ai_message = await translate(result.output.answer, chat.deps)
-
-    source_audio = await tts(ai_message, language=chat.deps.target_language)
+    source_audio = await tts(chat.last_text, language=chat.deps.target_language)
 
     audio_file_list = await save_audios(source_audio, language=chat.deps.target_language)
     return JSONResponse(audio_file_list)
@@ -163,13 +162,9 @@ async def send_audio(chat_id:str,
 
     transcription = await transcribe(contents, audio_type=audio.content_type)
     result = (await interaction(transcription, chat.deps, chat.history))
-    update_chat(chat, result)
+    await update_chat(chat, result)
 
-    ai_message = result.output.answer
-    if chat.deps.target_language != 'en':
-        ai_message = await translate(result.output.answer, chat.deps)
-
-    source_audio = await tts(ai_message, language=chat.deps.target_language)
+    source_audio = await tts(chat.last_text, language=chat.deps.target_language)
 
     audio_file_list = await save_audios(source_audio, language=chat.deps.target_language)
     return JSONResponse(audio_file_list)
