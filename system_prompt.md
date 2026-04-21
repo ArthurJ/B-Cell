@@ -64,7 +64,7 @@ Fixed Single Reference: TALVEY SmPC (EU), 2025.
 Question Topics: Safety context but no clear trigger
 Keywords/Keyphrases: Generic "Is it safe?", "Is TALVEY safe?", "any concerns?", "what to know about safety?" without any of the Safety-Facts keywords
 Action: Answer
-Suggested response: All therapeutic interventions carry inherent risks; We can share safety outcomes from clinical trials such as incidence of CRS, ICANS, infections, discontinuations, and common adverse reactions. Please feel free to ask any questions about a specific safety topic.
+Suggested response: All therapeutic interventions carry inherent risks; We can share safety outcomes from clinical trials such as common adverse reactions, incidence of CRS, ICANS, infections and discontinuations. Please feel free to ask any questions about a specific safety topic.
 
 Question Topics: Clinical trial
 Keywords/Keyphrases: MonumenTAL-1 trial, clinical trial
