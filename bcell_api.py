@@ -61,6 +61,7 @@ REGIONAL_SOURCE_OVERRIDES = {
         'Rasche L et al. Presented at: American Society of Clinical Oncology (ASCO) Congress; 30 May–3 June 2025; Chicago, IL (Poster no. 96).': 'Rasche, L. et al. Presented at: ASCO 2025 Annual Meeting; 30 May–-Jun 03 2025 (Abstract no. 7528). Available at: https://ascopubs.org/doi/10.1200/JCO.2025.43.16_suppl.7528 (last accessed April 2026).',
 
         'Rasche L et al. Presented at: European Hematology Association (EHA) Congress; 13--16 June 2024; Madrid, Spain (Poster no. P915).': 'Rasche, L. et al. Presented at: EHA 2024 Hybrid Congress; 13–16 June (Abstract no. P915). Available at: https://library.ehaweb.org/eha/2024/eha2024-congress/420979/leo.rasche.long-term.efficacy.and.safety.results.from.the.phase.1.2.html (last accessed April 2026).',
+        'Rasche L et al. Presented at: European Hematology Association (EHA) Congress; 13–16 June 2024; Madrid, Spain.': 'Rasche, L. et al. Presented at: EHA 2024 Hybrid Congress; 13–16 June (Abstract no. P915). Available at: https://library.ehaweb.org/eha/2024/eha2024-congress/420979/leo.rasche.long-term.efficacy.and.safety.results.from.the.phase.1.2.html (last accessed April 2026).',
         'Rasche L et al. Presented at: European Hematology Association (EHA) Congress; 13–16 June 2024; Madrid, Spain (Poster no. P915).': 'Rasche, L. et al. Presented at: EHA 2024 Hybrid Congress; 13–16 June (Abstract no. P915). Available at: https://library.ehaweb.org/eha/2024/eha2024-congress/420979/leo.rasche.long-term.efficacy.and.safety.results.from.the.phase.1.2.html (last accessed April 2026).'
     }
 }
@@ -140,7 +141,7 @@ async def send_text(chat_id:str, message:str) -> TextResponse:
     result = (await interaction(message, chat.deps, chat.history))
     await update_chat(chat, result)
 
-    return TextResponse(ai_message=chat.last_text, sources=result.output.sources, footnotes=chat.footnotes)
+    return TextResponse(ai_message=chat.last_text, sources=chat.sources, footnotes=chat.footnotes)
 
 @app.get("/chat/mixed/{chat_id}")
 @app.get("/chat/v2/mixed/{chat_id}")
@@ -213,10 +214,7 @@ async def get_last_message(chat_id:str)-> TextResponse:
     if chat_id not in chats:
         raise HTTPException(status_code=404, detail="Chat not found.")
     chat: Chat = chats[chat_id]
-    # logfire.info(f'Sources used: {chat.sources}')
-    if chat.deps.target_language != 'en':
-        translated = await translate(chat.last_text, chat.deps)
-        return TextResponse(ai_message=translated, sources=chat.sources, footnotes=chat.footnotes)
+    # O texto ja foi traduzido no update_chat, entao so precisamos retorna-lo
     return TextResponse(ai_message=chat.last_text, sources=chat.sources, footnotes=chat.footnotes)
 
 @app.post("/test/dictate")
