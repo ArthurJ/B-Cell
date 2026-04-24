@@ -53,6 +53,23 @@ prompt= open('system_prompt.md', 'r').read()
 
 chats = dict()
 
+# Mapeamento de fontes especificas por idioma/regiao
+REGIONAL_SOURCE_OVERRIDES = {
+    'pl': {
+        'Rasche L et al. Presented at: American Society of Clinical Oncology (ASCO) Congress; 30 May-3 June 2025': 'Rasche, L. et al. Presented at: ASCO 2025 Annual Meeting; 30 May–Jun 03 2025 (Abstract no. 7528). Available at: https://ascopubs.org/doi/10.1200/JCO.2025.43.16_suppl.7528 (last accessed April 2026).',
+        'Rasche L et al. Presented at: European Hematology Association (EHA) Congress; 13-16 June 2024; Madrid, Spain (Poster no. P915).': 'Rasche, L. et al. Presented at: EHA 2024 Hybrid Congress; 13–16 June (Abstract no. P915). Available at: https://library.ehaweb.org/eha/2024/eha2024-congress/420979/leo.rasche.long-term.efficacy.and.safety.results.from.the.phase.1.2.html (last accessed April 2026)'
+    }
+}
+
+def apply_source_overrides(source: str, language: str) -> str:
+    overrides = REGIONAL_SOURCE_OVERRIDES.get(language, {})
+    
+    for original, replacement in overrides.items():
+        if original in source:
+            return source.replace(original, replacement)
+            
+    return source
+
 
 async def save_audios(source_audio, qtd_voices=3, language:Language='en'):
     voices = await chorus(source_audio, qtd_voices=qtd_voices, language=language)
@@ -84,11 +101,13 @@ async def update_chat(chat: Chat, result: TextResponse):
     chat.history = result.all_messages()
     chat.last_text = ai_message or result.output.answer
     chat.footnotes = footnotes or result.output.footnotes
-    chat.sources = \
-        list({f"{format_reference(p).rstrip('.')}."
-              for p in (result.output.sources or [])
-              if result.output.is_source_relevant
-              })
+    
+    raw_sources = {f"{format_reference(p).rstrip('.')}."
+                   for p in (result.output.sources or [])
+                   if result.output.is_source_relevant}
+    
+    overridden_sources = [apply_source_overrides(src, chat.deps.target_language) for src in raw_sources]
+    chat.sources = list(set(overridden_sources))
 
 @app.get("/new-chat")
 async def new_chat(lang:Language='en'):

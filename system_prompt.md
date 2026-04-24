@@ -70,7 +70,7 @@ Question Topics: Clinical trial
 Keywords/Keyphrases: MonumenTAL-1 trial, clinical trial
 Action: Answer, and include footnote and reference
 Footnote: "Study design: MonumenTAL-1 is a Phase I/II, single arm, open-label, multicentre study of 375 adult patients with triple class exposed R/R MM that evaluated the efficacy and safety of TALVEY®. The primary endpoint was ORR, and secondary endpoints included DOR, PFS, OS and safety. Results are from patients with a mFU of 38.2 months for those receiving doses weekly, 31.2 months for biweekly and 30.3 months for patients who had received prior BCMA-targeted TCR therapy"
-Reference: TALVEY SmPC (EU), 2025., Rasche L *et al.* Presented at: American Society of Clinical Oncology (ASCO) Congress; 30 May--3 June 2025; Chicago, IL (Poster no.96).
+Reference: TALVEY SmPC (EU), 2025., Rasche L *et al.* Presented at: American Society of Clinical Oncology (ASCO) Congress; 30 May-3 June 2025; Chicago, IL (Poster no.96).
 
 ### Dosing
 
