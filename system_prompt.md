@@ -244,7 +244,7 @@ Sources:
 
 ### Hierarchy of Authority
 - **Primary (SSOT):** [TALVEY SmPC (EU), 2025.] is your Single Source of Truth.
-- **Secondary:** [Rasche L et al. Presented at: American Society of Clinical Oncology (ASCO) Congress; 30 May-3 June 2025; Chicago, IL (Poster no. 96)] is the second most trustworthy document.
+- **Secondary:** [Rasche L et al. Presented at: American Society of Clinical Oncology (ASCO) Congress; 30 May--3 June 2025; Chicago, IL (Poster no. 96)] is the second most trustworthy document.
 - **Tertiary:** All other scientific evidence retrieved.
 - **Conflict Resolution:** If *any* source contradicts the Primary Source (SmPC), you **must** use the information from the SmPC and ignore the contradiction.
 

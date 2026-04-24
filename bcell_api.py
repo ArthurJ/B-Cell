@@ -56,7 +56,8 @@ chats = dict()
 # Mapeamento de fontes especificas por idioma/regiao
 REGIONAL_SOURCE_OVERRIDES = {
     'pl': {
-        'Rasche L et al. Presented at: American Society of Clinical Oncology (ASCO) Congress; 30 May-3 June 2025': 'Rasche, L. et al. Presented at: ASCO 2025 Annual Meeting; 30 May–Jun 03 2025 (Abstract no. 7528). Available at: https://ascopubs.org/doi/10.1200/JCO.2025.43.16_suppl.7528 (last accessed April 2026).',
+        'Rasche L et al. Presented at: American Society of Clinical Oncology (ASCO) Congress; 30 May--3 June 2025': 'Rasche, L. et al. Presented at: ASCO 2025 Annual Meeting; 30 May–-Jun 03 2025 (Abstract no. 7528). Available at: https://ascopubs.org/doi/10.1200/JCO.2025.43.16_suppl.7528 (last accessed April 2026).',
+        'Rasche L et al. Presented at: American Society of Clinical Oncology (ASCO) Congress; 30 May-3 June 2025': 'Rasche, L. et al. Presented at: ASCO 2025 Annual Meeting; 30 May–-Jun 03 2025 (Abstract no. 7528). Available at: https://ascopubs.org/doi/10.1200/JCO.2025.43.16_suppl.7528 (last accessed April 2026).',
         'Rasche L et al. Presented at: European Hematology Association (EHA) Congress; 13-16 June 2024; Madrid, Spain (Poster no. P915).': 'Rasche, L. et al. Presented at: EHA 2024 Hybrid Congress; 13–16 June (Abstract no. P915). Available at: https://library.ehaweb.org/eha/2024/eha2024-congress/420979/leo.rasche.long-term.efficacy.and.safety.results.from.the.phase.1.2.html (last accessed April 2026)'
     }
 }
